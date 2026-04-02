@@ -1,47 +1,53 @@
 :root {
   --bg: #f4f7fb;
   --card: #ffffff;
-  --text: #1f2937;
+  --text: #111827;
   --muted: #6b7280;
   --border: #e5e7eb;
   --primary: #111827;
-  --libre: #dcfce7;
-  --libre-text: #166534;
-  --reservado: #fef3c7;
-  --reservado-text: #92400e;
-  --vendido: #fee2e2;
-  --vendido-text: #991b1b;
-  --wf-entregado-bg: #dcfce7;
-  --wf-entregado-text: #166534;
-  --wf-produccion-bg: #fef3c7;
-  --wf-produccion-text: #92400e;
-  --wf-pendiente-bg: #fee2e2;
-  --wf-pendiente-text: #991b1b;
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  --radius: 20px;
+  --shadow: 0 10px 25px rgba(0,0,0,0.05);
+  --radius: 16px;
 }
 
-body { margin: 0; font-family: Inter, Arial, sans-serif; background: var(--bg); color: var(--text); }
-.container { max-width: 1460px; margin: 0 auto; padding: 24px; }
-.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; }
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-.stat { padding: 20px; text-align: center; }
-.stat strong { font-size: 32px; display: block; }
+body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-/* Estilos de las Tarjetas del Demo */
-.task-item { border: 1px solid var(--border); border-radius: 18px; padding: 16px; background: white; margin-bottom: 12px; }
-.task-item.is-reservado { background: linear-gradient(180deg, #fffdf3 0%, #fff9e6 100%); border-color: #fcd34d; }
-.task-item.is-vendido { background: linear-gradient(180deg, #fff7f7 0%, #ffecec 100%); border-color: #fca5a5; }
-.task-item.is-libre { background: linear-gradient(180deg, #f8fffb 0%, #ffffff 100%); }
+/* Cabecera */
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.brand { display: flex; align-items: center; gap: 15px; }
+.brand-logo { width: 50px; height: 50px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: bold; font-size: 20px; }
+h1 { margin: 0; font-size: 24px; }
+.subtitle { margin: 0; color: var(--muted); font-size: 14px; }
 
-.badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-.badge.libre { background: var(--libre); color: var(--libre-text); }
-.badge.reservado { background: var(--reservado); color: var(--reservado-text); }
-.badge.vendido { background: var(--vendido); color: var(--vendido-text); }
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+.stat { padding: 20px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); text-align: center; }
+.stat strong { font-size: 28px; display: block; margin-top: 5px; }
 
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-.day-cell { min-height: 120px; background: white; border: 1px solid var(--border); border-radius: 12px; padding: 8px; cursor: pointer; }
-.day-cell:hover { border-color: var(--primary); }
+/* Botones */
+.view-switch { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+button { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border); background: white; cursor: pointer; font-weight: 500; transition: 0.2s; }
+button.active { background: var(--primary); color: white; border-color: var(--primary); }
+button:hover { background: #f9fafb; }
 
-.view-switch button { padding: 10px 20px; border-radius: 10px; border: 1px solid var(--border); background: white; cursor: pointer; margin-right: 8px; }
-.view-switch button.active { background: var(--primary); color: white; }
+/* Tarjetas de Acción */
+.task-item { padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
+.task-item.is-vendido { background: linear-gradient(to right, #fff5f5, #ffffff); border-left: 5px solid #ef4444; }
+.task-item.is-reservado { background: linear-gradient(to right, #fffbeb, #ffffff); border-left: 5px solid #f59e0b; }
+.task-item.is-libre { background: linear-gradient(to right, #f0fdf4, #ffffff); border-left: 5px solid #10b981; }
+
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+.badge.vendido { background: #fee2e2; color: #991b1b; }
+.badge.reservado { background: #fef3c7; color: #92400e; }
+.badge.libre { background: #dcfce7; color: #166534; }
+
+/* Calendario Mensual */
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
+.day-cell { aspect-ratio: 1 / 1; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 8px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+.day-cell:hover { background: #f9fafb; border-color: var(--primary); }
+.day-name { text-align: center; font-weight: bold; font-size: 12px; color: var(--muted); padding: 5px; }
+
+@media (max-width: 600px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    h1 { font-size: 18px; }
+}
