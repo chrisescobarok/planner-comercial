@@ -11,6 +11,7 @@ let currentDate = '2026-06-14';
 let currentWeekStart = '2026-06-08'; 
 let currentMonth = new Date('2026-06-01T00:00:00');
 
+// --- MOTOR DE RENDERIZADO ---
 function render() {
     const content = document.getElementById('content');
     updateStats();
@@ -42,106 +43,42 @@ function taskCard(t) {
     `;
 }
 
-// --- VISTA LISTA AGRUPADA POR DÍAS (LA MEJORA) ---
+// --- VISTA LISTA CON FRANJAS DE DÍA ---
 function renderList(container) {
-    // Ordenamos las tareas por fecha y luego por hora
     const sortedTasks = [...tasks].sort((a, b) => {
         if (a.date !== b.date) return a.date.localeCompare(b.date);
         return a.time.localeCompare(b.time);
     });
 
-    let html = '<h2>Cronograma Completo</h2>';
+    let html = '<h2>Cronograma Detallado</h2>';
     let lastDate = null;
 
     sortedTasks.forEach(t => {
-        // Si la fecha cambia, insertamos una franja divisoria
         if (t.date !== lastDate) {
             const dateObj = new Date(t.date + 'T00:00:00');
-            const dateLabel = dateObj.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' });
+            const dayLabel = dateObj.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' });
             
             html += `
-                <div style="background: #f1f5f9; padding: 10px 20px; margin: 30px 0 15px 0; border-radius: 10px; border-left: 5px solid #64748b;">
-                    <span style="text-transform: capitalize; font-weight: bold; color: #475569;">📅 ${dateLabel}</span>
-                </div>
-            `;
+                <div style="background: #e2e8f0; padding: 12px 20px; margin: 30px 0 15px 0; border-radius: 12px; display: flex; align-items: center; gap: 10px; border-left: 6px solid #1e293b;">
+                    <span style="text-transform: capitalize; font-weight: 800; color: #1e293b; font-size: 16px;">📅 ${dayLabel}</span>
+                </div>`;
             lastDate = t.date;
         }
         html += taskCard(t);
     });
-
     container.innerHTML = html || '<p>No hay acciones registradas.</p>';
 }
 
-// --- RESTO DE VISTAS ---
+// --- VISTAS RESTANTES ---
 function renderDaily(container) {
     const filtered = tasks.filter(t => t.date === currentDate);
     container.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2>Vista Diaria</h2>
             <div style="display:flex; gap:10px; align-items:center;">
-                <button onclick="moveDay(-1)">⬅️</button>
+                <button onclick="moveDay(-1)">Anterior</button>
                 <input type="date" value="${currentDate}" onchange="currentDate=this.value; render();" style="padding:8px; border-radius:8px; border:1px solid #ddd;">
-                <button onclick="moveDay(1)">➡️</button>
+                <button onclick="moveDay(1)">Siguiente</button>
             </div>
         </div>
-        ${filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>'}
-    `;
-}
-
-function renderWeekly(container) {
-    const start = new Date(currentWeekStart + 'T00:00:00');
-    let html = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:12px;">';
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(start);
-        d.setDate(start.getDate() + i);
-        const dStr = d.toISOString().slice(0, 10);
-        const dayTasks = tasks.filter(t => t.date === dStr);
-        html += `
-            <div style="background:white; border:1px solid #eee; border-radius:12px; padding:10px; min-height:250px;">
-                <div style="font-weight:bold; font-size:12px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:10px;">${dStr}</div>
-                ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block; overflow:hidden;">${t.time} ${t.title}</div>`).join('')}
-            </div>`;
-    }
-    html += '</div>';
-    container.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Anterior</button> <button onclick="moveWeek(7)">Siguiente</button></div></div>${html}`;
-}
-
-function renderMonthly(container) {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    const offset = (firstDay.getDay() + 6) % 7;
-
-    let grid = '<div class="calendar-grid">';
-    ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(d => grid += `<div class="day-name">${d}</div>`);
-    for(let i=0; i<offset; i++) grid += '<div class="day-cell" style="opacity:0.2;"></div>';
-    for(let d=1; d<=lastDay; d++) {
-        const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const count = tasks.filter(t => t.date === dStr).length;
-        grid += `<div class="day-cell" onclick="currentDate='${dStr}'; currentView='diaria'; render();">
-            <strong>${d}</strong>
-            ${count > 0 ? `<div style="background:#111827; color:white; border-radius:4px; font-size:10px; text-align:center;">${count} act.</div>` : ''}
-        </div>`;
-    }
-    grid += '</div>';
-    container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 style="text-transform:capitalize;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2><div><button onclick="moveMonth(-1)">Anterior</button> <button onclick="moveMonth(1)">Siguiente</button></div></div>${grid}`;
-}
-
-// --- NAVEGACIÓN ---
-window.moveDay = (n) => { let d = new Date(currentDate+'T00:00:00'); d.setDate(d.getDate()+n); currentDate=d.toISOString().slice(0,10); render(); };
-window.moveWeek = (n) => { let d = new Date(currentWeekStart+'T00:00:00'); d.setDate(d.getDate()+n); currentWeekStart=d.toISOString().slice(0,10); render(); };
-window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth()+n); render(); };
-
-document.getElementById('roleLoginBtn').onclick = () => alert('Acceso restringido');
-
-document.querySelectorAll('.view-switch button').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.view-switch button').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        currentView = e.target.dataset.view;
-        render();
-    });
-});
-
-render();
+        ${filtered
