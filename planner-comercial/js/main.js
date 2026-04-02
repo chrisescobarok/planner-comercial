@@ -1,4 +1,4 @@
-// --- 1. USUARIOS Y ROLES ---
+// --- 1. CONFIGURACIÓN Y DATOS ---
 const USERS = {
     "editorial": { pass: "metro2026", role: "Editorial", color: "#2563eb" },
     "content": { pass: "content2026", role: "Content", color: "#10b981" },
@@ -6,8 +6,6 @@ const USERS = {
 };
 
 let currentUser = null; 
-
-// --- 2. DATOS (SIEMPRE VISIBLES) ---
 let tasks = [
     { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '' },
     { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki' },
@@ -15,15 +13,14 @@ let tasks = [
     { id: 5, title: 'Análisis Post-Partido', responsible: 'Carlos Bolaños', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-15', time: '10:00', client: '' }
 ];
 
-// --- 3. ESTADO INICIAL ---
-let currentView = 'lista'; // Forzamos lista para que SIEMPRE veas algo al cargar
+let currentView = 'lista'; 
 let currentDate = '2026-06-14';
 let currentWeekStart = '2026-06-08'; 
 let currentMonth = new Date('2026-06-01T00:00:00');
 
-// --- 4. FUNCIONES DE LOGIN ---
-window.openLogin = () => { document.getElementById('loginModal').style.display = 'flex'; };
-window.closeLogin = () => { document.getElementById('loginModal').style.display = 'none'; };
+// --- 2. SISTEMA DE LOGIN ---
+window.openLogin = () => document.getElementById('loginModal').style.display = 'flex';
+window.closeLogin = () => document.getElementById('loginModal').style.display = 'none';
 
 window.attemptLogin = () => {
     const u = document.getElementById('userInput').value;
@@ -35,9 +32,7 @@ window.attemptLogin = () => {
         document.getElementById('logoutBtn').style.display = 'block';
         closeLogin();
         render();
-    } else {
-        alert("Usuario o clave incorrectos");
-    }
+    } else { alert("Usuario o clave incorrectos"); }
 };
 
 window.logout = () => {
@@ -48,12 +43,12 @@ window.logout = () => {
     render();
 };
 
-// --- 5. MOTOR DE DIBUJO ---
+// --- 3. MOTOR DE RENDERIZADO ---
 function render() {
     const content = document.getElementById('content');
     if(!content) return;
     
-    // Actualizar contadores superiores
+    // Contadores
     document.getElementById('statTotal').innerText = tasks.length;
     document.getElementById('statLibre').innerText = tasks.filter(t => t.bookingStatus === 'libre').length;
     document.getElementById('statReservado').innerText = tasks.filter(t => t.bookingStatus === 'reservado').length;
@@ -89,7 +84,7 @@ function taskCard(t) {
 // --- VISTAS ---
 function renderDaily(container) {
     const filtered = tasks.filter(t => t.date === currentDate);
-    container.innerHTML = `<h2>Día: ${currentDate}</h2>` + filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>';
+    container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2>Vista Diaria</h2><div><button onclick="moveDay(-1)">⬅️</button> <button onclick="moveDay(1)">➡️</button></div></div>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>');
 }
 
 function renderWeekly(container) {
@@ -101,7 +96,7 @@ function renderWeekly(container) {
         const dayTasks = tasks.filter(t => t.date === dStr);
         html += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="background:white; border:1px solid #eee; border-radius:10px; padding:10px; min-height:300px; cursor:pointer;">
             <div style="font-weight:bold; font-size:11px; margin-bottom:10px;">${dStr}</div>
-            ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px;">${t.time} ${t.title.substring(0,15)}...</div>`).join('')}
+            ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block; padding:2px;">${t.time} ${t.title.substring(0,12)}...</div>`).join('')}
         </div>`;
     }
     container.innerHTML = `<h2>Vista Semanal</h2>` + html + '</div>';
@@ -110,24 +105,31 @@ function renderWeekly(container) {
 function renderMonthly(container) {
     const year = currentMonth.getFullYear(); const month = currentMonth.getMonth();
     const lastDay = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1);
+    const offset = (firstDay.getDay() + 6) % 7;
+
     let grid = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; background:#f1f5f9; padding:5px; border-radius:12px;">';
+    ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:11px; color:#64748b; padding:5px;">${d}</div>`);
+    
+    for(let i=0; i<offset; i++) grid += '<div style="background:#f8fafc; border-radius:8px;"></div>';
+    
     for(let d=1; d<=lastDay; d++) {
         const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const dayTasks = tasks.filter(t => t.date === dStr);
-        grid += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="min-height:80px; background:white; border-radius:8px; padding:5px; cursor:pointer;">
-            <strong>${d}</strong>
-            ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="height:4px; margin-top:2px;"></div>`).join('')}
+        grid += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="min-height:100px; background:white; border-radius:8px; padding:8px; cursor:pointer; display:flex; flex-direction:column; gap:4px;">
+            <strong style="font-size:12px;">${d}</strong>
+            ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>`).join('')}
         </div>`;
     }
     container.innerHTML = `<h2>${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2>` + grid + '</div>';
 }
 
 function renderList(container) {
-    let html = '<h2>Cronograma de Acciones</h2>';
+    let html = '<h2>Cronograma Detallado</h2>';
     let lastDate = null;
     [...tasks].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t => {
         if (t.date !== lastDate) {
-            html += `<div style="background:#e2e8f0; padding:10px; margin:20px 0 10px 0; border-radius:8px; font-weight:bold;">📅 ${t.date}</div>`;
+            html += `<div style="background:#e2e8f0; padding:12px; margin:25px 0 10px 0; border-radius:10px; font-weight:bold; border-left:5px solid #1e293b;">📅 ${t.date}</div>`;
             lastDate = t.date;
         }
         html += taskCard(t);
@@ -135,10 +137,9 @@ function renderList(container) {
     container.innerHTML = html;
 }
 
-// --- NAVEGACIÓN Y EVENTOS ---
-window.moveDay = (n) => { /* ... similar logic ... */ };
+// --- NAVEGACIÓN ---
+window.moveDay = (n) => { let d = new Date(currentDate+'T00:00:00'); d.setDate(d.getDate()+n); currentDate=d.toISOString().slice(0,10); render(); };
 
-// IMPORTANTE: Conectar botones de arriba
 document.querySelectorAll('.view-switch button').forEach(btn => {
     btn.onclick = (e) => {
         document.querySelectorAll('.view-switch button').forEach(b => b.classList.remove('active'));
@@ -148,9 +149,7 @@ document.querySelectorAll('.view-switch button').forEach(btn => {
     };
 });
 
-// Botón login
 document.getElementById('roleLoginBtn').onclick = window.openLogin;
 document.getElementById('logoutBtn').onclick = window.logout;
 
-// Ejecución inicial
 render();
