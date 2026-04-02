@@ -6,7 +6,7 @@
     <title>Planner Comercial - Metro Ecuador</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        /* Ajuste de emergencia para alinear botones arriba */
+        /* Ajuste de alineación para los botones superiores */
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .auth-controls { display: flex; align-items: center; gap: 10px; }
         #btnNuevaAccion { height: 38px; margin: 0; vertical-align: middle; }
@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="auth-controls">
-                    <span id="authStatus">👁️ Modo público</span>
+                    <span id="authStatus" style="font-size: 14px; font-weight: 500;">👁️ Modo público</span>
                     <button id="roleLoginBtn" class="btn-secondary" onclick="openLogin()">Ingresar</button>
                     <button id="logoutBtn" class="btn-secondary" style="display:none;" onclick="logout()">Cerrar sesión</button>
                     <button id="btnNuevaAccion" style="display:none; background:#f97316; color:white; font-weight:bold; border:none; padding:8px 15px; border-radius:10px; cursor:pointer;" onclick="openActionModal()">+ Nueva acción</button>
@@ -50,16 +50,22 @@
             </main>
     </div>
 
-    <div id="loginModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h2>Acceso Personal Metro</h2>
-            <div style="margin-top:15px;">
-                <input type="text" id="userInput" placeholder="Usuario" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
-                <input type="password" id="passInput" placeholder="Contraseña" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
-                <button onclick="attemptLogin()" class="btn-primary" style="width:100%;">Entrar</button>
+    <div id="loginModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:white; padding:30px; border-radius:15px; width:100%; max-width:400px;">
+            <h2 style="margin-top:0;">Acceso Personal Metro</h2>
+            <div style="margin-top:20px;">
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">Usuario</label>
+                <input type="text" id="userInput" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
+                <label style="display:block; margin-bottom:5px; font-weight:bold;">Contraseña</label>
+                <input type="password" id="passInput" style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
+                <button onclick="attemptLogin()" style="width:100%; padding:12px; background:#111827; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Entrar</button>
                 <button onclick="closeLogin()" style="width:100%; margin-top:10px; background:none; border:none; color:gray; cursor:pointer;">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <div id="actionModal" class="modal" style="display:none
+    <div id="actionModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:white; padding:30px; border-radius:15px; width:100%; max-width:500px;">
+            <h2 style="margin-top:0;">Nueva Acción Planificada</h2>
+            <div style="margin-top:20px;">
+                <input type="text" id="newTitle
