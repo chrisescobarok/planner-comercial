@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planner Comercial - Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <div>
+                <div class="brand">
+                    <div class="brand-logo">ME</div>
+                    <div>
+                        <h1>Planner Comercial - Dashboard</h1>
+                        <p class="subtitle">Visualización pública de contenido editorial y comercial</p>
+                    </div>
+                </div>
+            </div>
+            <div class="actions">
+                <span class="auth-lock" id="authStatus">👁️ Modo público</span>
+                <button id="copyShareLinkBtn">Copiar link público</button>
+                <button id="roleLoginBtn">Ingresar</button>
+                <button id="logoutBtn" class="btn-danger" style="display:none;">Cerrar sesión</button>
+                <button id="newTaskBtn" class="btn-primary">🔒 Nueva acción</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="card stat"><small>Total acciones</small><strong id="statTotal">0</strong></div>
+            <div class="card stat"><small>Libres</small><strong id="statLibre">0</strong></div>
+            <div class="card stat"><small>Reservadas</small><strong id="statReservado">0</strong></div>
+            <div class="card stat"><small>Vendidas</small><strong id="statVendido">0</strong></div>
+        </div>
+
+        <div class="card toolbar">
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="searchInput" placeholder="Buscar por acción, cliente..." />
+                <button id="searchBtn" type="button">🔍</button>
+            </div>
+            <select id="categoryFilter"></select>
+            <select id="statusFilter">
+                <option value="todas">Todos los estados</option>
+                <option value="libre">Libre</option>
+                <option value="reservado">Reservado</option>
+                <option value="vendido">Vendido</option>
+            </select>
+        </div>
+
+        <div class="view-switch">
+            <button class="active" data-view="diaria">Vista diaria</button>
+            <button data-view="semanal">Vista semanal</button>
+            <button data-view="mensual">Vista mensual</button>
+            <button data-view="lista">Vista lista</button>
+        </div>
+
+        <div class="card panel" id="content"></div>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+            <h2 id="formModalTitle">Nueva acción comercial</h2>
+            <div class="form-grid">
+                <div class="full"><label>Título</label><input type="text" id="fTitle" /></div>
+                <div><label>Categoría</label><div class="inline-add"><select id="fCategory"></select><button id="addCategoryBtn">+</button></div></div>
+                <div><label>Responsable</label><input type="text" id="fResponsible" /></div>
+                <div><label>Proyecto</label><div class="inline-add"><select id="fProject"></select><button id="addProjectBtn">+</button></div></div>
+                <div><label>Estatus</label><div class="inline-add"><select id="fWorkflowStatus"></select><button id="addWorkflowBtn">+</button></div></div>
+                <div><label>Contenido</label><div class="inline-add"><select id="fContentType"></select><button id="addContentTypeBtn">+</button></div></div>
+                <div><label>Estado comercial</label><select id="fBookingStatus"><option value="libre">Libre</option><option value="reservado">Reservado</option><option value="vendido">Vendido</option></select></div>
+                <div><label>Fecha</label><input type="date" id="fDate" /></div>
+                <div><label>Hora</label><input type="time" id="fTime" /></div>
+                <div><label>Cliente</label><input type="text" id="fClient" /></div>
+                <div><label>Evento / Partido</label><input type="text" id="fEvent" /></div>
+                <div class="full"><label>Observaciones</label><textarea id="fNotes" rows="3"></textarea></div>
+            </div>
+            <div class="modal-actions">
+                <button id="cancelBtn">Cancelar</button>
+                <button id="saveBtn" class="btn-primary">Guardar acción</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="loginBackdrop">
+        <div class="modal login-modal">
+            <h2>Ingresar al sistema</h2>
+            <div><label>Usuario</label><input type="text" id="loginUser" /></div>
+            <div style="margin-top:12px;"><label>Contraseña</label><input type="password" id="loginPass" /></div>
+            <div class="modal-actions"><button id="closeLoginBtn">Cancelar</button><button id="loginSubmitBtn" class="btn-primary">Ingresar</button></div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="reserveBackdrop">
+        <div class="modal login-modal">
+            <h2>Reservar acción</h2>
+            <div><label>Tu nombre</label><input type="text" id="reservePerson" /></div>
+            <div style="margin-top:12px;"><label>Nombre del cliente</label><input type="text" id="reserveClient" /></div>
+            <div style="margin-top:12px;"><label>Estado comercial</label><select id="reserveBookingStatus"><option value="reservado">Reservado</option><option value="vendido">Vendido</option></select></div>
+            <div class="modal-actions"><button id="closeReserveBtn">Cancelar</button><button id="reserveSubmitBtn" class="btn-primary">Confirmar</button></div>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin-top:40px;color:#6b7280;font-size:14px;">Realizado por Christian Escobar Salazar</div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

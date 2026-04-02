@@ -1,0 +1,71 @@
+:root {
+    --bg: #f4f7fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --primary: #111827;
+    --libre: #dcfce7;
+    --libre-text: #166534;
+    --reservado: #fef3c7;
+    --reservado-text: #92400e;
+    --vendido: #fee2e2;
+    --vendido-text: #991b1b;
+    --wf-entregado-bg: #dcfce7;
+    --wf-entregado-text: #166534;
+    --wf-produccion-bg: #fef3c7;
+    --wf-produccion-text: #92400e;
+    --wf-pendiente-bg: #fee2e2;
+    --wf-pendiente-text: #991b1b;
+    --wf-cancelado-bg: #ede9fe;
+    --wf-cancelado-text: #6d28d9;
+    --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    --radius: 20px;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Inter, Arial, sans-serif; background: var(--bg); color: var(--text); }
+.container { max-width: 1460px; margin: 0 auto; padding: 24px; }
+.topbar { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:24px; }
+h1 { margin:0 0 6px; font-size:34px; line-height:1.1; }
+.subtitle { color:var(--muted); margin:0; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+button, select, input, textarea { font:inherit; }
+button { border:1px solid var(--border); background:white; padding:10px 14px; border-radius:14px; cursor:pointer; transition:.2s ease; }
+button:hover { transform:translateY(-1px); }
+.btn-primary { background:var(--primary); color:white; border-color:var(--primary); }
+.btn-danger { background:#b91c1c; color:white; border-color:#b91c1c; }
+.btn-secondary { background:#eef2ff; color:#3730a3; border-color:#c7d2fe; }
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:18px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
+.stat { padding:20px; }
+.stat strong { font-size:34px; line-height:1; }
+.toolbar { display:grid; grid-template-columns:1.2fr .8fr .8fr; gap:12px; padding:16px; margin-bottom:18px; }
+.toolbar input, .modal input, .modal select, .modal textarea { width:100%; padding:11px 12px; border-radius:12px; border:1px solid var(--border); }
+.view-switch { display:flex; gap:8px; margin-bottom:18px; }
+.view-switch button.active { background:var(--primary); color:white; }
+.panel { padding:18px; }
+.calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; }
+.day-cell { min-height:170px; border:1px solid var(--border); border-radius:18px; padding:10px; background:#fff; cursor:pointer; }
+.mini-task { border:1px solid var(--border); border-radius:12px; padding:8px; margin-bottom:8px; font-size:12px; }
+.badge { display:inline-block; font-size:12px; font-weight:700; padding:5px 10px; border-radius:999px; }
+.badge.libre { background:var(--libre); color:var(--libre-text); }
+.badge.reservado { background:var(--reservado); color:var(--reservado-text); }
+.badge.vendido { background:var(--vendido); color:var(--vendido-text); }
+.workflow-badge { display:inline-block; font-size:12px; font-weight:700; padding:5px 10px; border-radius:999px; }
+.workflow-badge.entregado { background: var(--wf-entregado-bg); color: var(--wf-entregado-text); }
+.workflow-badge.produccion { background: var(--wf-produccion-bg); color: var(--wf-produccion-text); }
+.workflow-badge.pendiente { background: var(--wf-pendiente-bg); color: var(--wf-pendiente-text); }
+.workflow-badge.cancelado { background: var(--wf-cancelado-bg); color: var(--wf-cancelado-text); }
+.task-item { border:1px solid var(--border); border-radius:18px; padding:16px; background:white; margin-bottom:10px;}
+.modal-backdrop { position:fixed; inset:0; background:rgba(15, 23, 42, 0.45); display:none; align-items:center; justify-content:center; z-index:1000; }
+.modal-backdrop.open { display:flex; }
+.modal { width:100%; max-width:900px; background:white; border-radius:22px; padding:22px; max-height:92vh; overflow:auto; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.full { grid-column: 1 / -1; }
+.brand { display:flex; align-items:center; gap:12px; }
+.brand-logo { width:52px; height:52px; border-radius:16px; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; }
+
+@media (max-width: 768px) {
+    .stats, .calendar-grid, .form-grid { grid-template-columns: 1fr; }
+}
