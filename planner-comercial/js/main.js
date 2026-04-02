@@ -12,9 +12,10 @@ let tasks = [
     { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' }
 ];
 
+// Variables de navegación (Junio 2026 para el Mundial)
 let currentView = 'lista'; 
 let currentDate = '2026-06-14';
-let currentWeekStart = '2026-06-08'; 
+let currentWeekStart = new Date('2026-06-08T00:00:00'); 
 let currentMonth = new Date('2026-06-01T00:00:00');
 
 // --- 2. SISTEMA DE LOGIN Y MODALES ---
@@ -31,12 +32,7 @@ window.attemptLogin = () => {
         document.getElementById('authStatus').innerHTML = `<span style="color:${currentUser.color}; font-weight:bold;">● ${currentUser.role}</span>`;
         document.getElementById('roleLoginBtn').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'block';
-        
-        // MOSTRAR BOTÓN NUEVA ACCIÓN SOLO SI ES EDITORIAL
-        if(currentUser.role === "Editorial") {
-            document.getElementById('btnNuevaAccion').style.display = 'inline-block';
-        }
-        
+        if(currentUser.role === "Editorial") document.getElementById('btnNuevaAccion').style.display = 'inline-block';
         closeLogin();
         render();
     } else { alert("Usuario o clave incorrectos"); }
@@ -58,19 +54,19 @@ window.saveNewAction = () => {
     const time = document.getElementById('newTime').value;
     const resp = document.getElementById('newResp').value;
     const status = document.getElementById('newStatus').value;
-
     if(!title || !date || !time) return alert("Completa Título, Fecha y Hora");
-
     tasks.push({ id: Date.now(), title, date, time, responsible: resp, project: "Metro Ecuador", bookingStatus: status, client: "" });
     closeActionModal();
     render();
-    document.getElementById('newTitle').value = ""; // Limpiar
+    document.getElementById('newTitle').value = "";
 };
 
-// --- 4. MOTOR DE RENDERIZADO (BLOQUEADO / NO TOCAR) ---
+// --- 4. MOTOR DE RENDERIZADO (DISEÑO BLOQUEADO) ---
 function render() {
     const content = document.getElementById('content');
     if(!content) return;
+    
+    // Contadores superiores
     document.getElementById('statTotal').innerText = tasks.length;
     document.getElementById('statLibre').innerText = tasks.filter(t => t.bookingStatus === 'libre').length;
     document.getElementById('statReservado').innerText = tasks.filter(t => t.bookingStatus === 'reservado').length;
@@ -89,67 +85,4 @@ function taskCard(t) {
         else if (currentUser.role === "Content" && t.bookingStatus === "libre") btn = `<button class="btn-mini">Reservar</button>`;
         else if (currentUser.role === "Tráfico y Control" && t.bookingStatus === "reservado") btn = `<button class="btn-mini">Vender</button>`;
     }
-    return `<div class="task-item is-${t.bookingStatus}"><div style="display:flex; justify-content:space-between; align-items:start;"><div><span class="badge ${t.bookingStatus}">${t.bookingStatus}</span><div style="font-size:18px; font-weight:bold; margin-top:8px;">${t.title}</div><div style="color:gray; font-size:13px; margin-top:5px;">🕒 ${t.time} | 👤 ${t.responsible}</div><div style="margin-top:10px;">${btn}</div></div>${t.client ? `<div style="text-align:right;"><small>Cliente</small><br><strong>${t.client}</strong></div>` : ''}</div></div>`;
-}
-
-function renderDaily(container) {
-    const filtered = tasks.filter(t => t.date === currentDate);
-    container.innerHTML = `<h2>Día: ${currentDate}</h2>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>');
-}
-
-function renderWeekly(container) {
-    const start = new Date(currentWeekStart + 'T00:00:00');
-    let html = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:10px;">';
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(start); d.setDate(start.getDate() + i);
-        const dStr = d.toISOString().slice(0, 10);
-        const dayTasks = tasks.filter(t => t.date === dStr);
-        html += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="background:white; border:1px solid #eee; border-radius:10px; padding:10px; min-height:300px; cursor:pointer;"><div style="font-weight:bold; font-size:11px; margin-bottom:10px;">${dStr}</div>${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block;">${t.time} ${t.title.substring(0,12)}...</div>`).join('')}</div>`;
-    }
-    container.innerHTML = `<h2>Semana</h2>` + html + '</div>';
-}
-
-function renderMonthly(container) {
-    const year = currentMonth.getFullYear(); const month = currentMonth.getMonth();
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1);
-    const offset = (firstDay.getDay() + 6) % 7;
-    let grid = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; background:#f1f5f9; padding:5px; border-radius:12px;">';
-    ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:11px; color:#64748b; padding:5px;">${d}</div>`);
-    for(let i=0; i<offset; i++) grid += '<div style="background:#f8fafc; border-radius:8px;"></div>';
-    for(let d=1; d<=lastDay; d++) {
-        const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const dayTasks = tasks.filter(t => t.date === dStr);
-        grid += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="min-height:100px; background:white; border-radius:8px; padding:8px; cursor:pointer;"><strong>${d}</strong>${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px; white-space:nowrap; overflow:hidden;">${t.title}</div>`).join('')}</div>`;
-    }
-    container.innerHTML = `<h2>${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2>` + grid + '</div>';
-}
-
-function renderList(container) {
-    let html = '<h2>Cronograma Detallado</h2>';
-    let lastDate = null;
-    [...tasks].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t => {
-        if (t.date !== lastDate) {
-            html += `<div style="background:#e2e8f0; padding:12px; margin:25px 0 10px 0; border-radius:10px; font-weight:bold; border-left:5px solid #1e293b;">📅 ${t.date}</div>`;
-            lastDate = t.date;
-        }
-        html += taskCard(t);
-    });
-    container.innerHTML = html;
-}
-
-// --- 5. EVENTOS ---
-document.getElementById('roleLoginBtn').onclick = window.openLogin;
-document.getElementById('logoutBtn').onclick = window.logout;
-document.getElementById('btnNuevaAccion').onclick = window.openActionModal;
-
-document.querySelectorAll('.view-switch button').forEach(btn => {
-    btn.onclick = (e) => {
-        document.querySelectorAll('.view-switch button').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        currentView = e.target.getAttribute('data-view');
-        render();
-    };
-});
-
-render();
+    return `<div class="task-item is-${t.bookingStatus}"><div style="display:flex; justify-content:space-between; align-items:start;"><div><span class="badge ${t.bookingStatus}">${t.bookingStatus}</span><div style="font-size:18px; font-weight:bold; margin-top:8px;">${t.title}</div><div style="color:gray; font-size:13px
