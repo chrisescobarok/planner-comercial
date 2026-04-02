@@ -117,4 +117,39 @@ function renderMonthly(container) {
         grid += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="min-height:100px; background:white; border-radius:8px; padding:6px; cursor:pointer; display:flex; flex-direction:column; gap:3px;"><strong>${d}</strong>${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.time} ${t.title}</div>`).join('')}</div>`;
     }
     grid += '</div>';
-    container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 style="text-transform:capitalize;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2><div><button onclick="moveMonth(-1)">Anterior</button> <button onclick="moveMonth(1)">Siguiente</button
+    container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 style="text-transform:capitalize;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2><div><button onclick="moveMonth(-1)">Anterior</button> <button onclick="moveMonth(1)">Siguiente</button></div></div>${grid}`;
+}
+
+function renderList(container) {
+    const sortedTasks = [...tasks].sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+    let html = '<h2>Cronograma Detallado</h2>';
+    let lastDate = null;
+    sortedTasks.forEach(t => {
+        if (t.date !== lastDate) {
+            const dateObj = new Date(t.date + 'T00:00:00');
+            html += `<div style="background: #e2e8f0; padding: 12px 20px; margin: 30px 0 15px 0; border-radius: 12px; display: flex; align-items: center; gap: 10px; border-left: 6px solid #1e293b;"><span style="text-transform: capitalize; font-weight: 800; color: #1e293b; font-size: 16px;">📅 ${dateObj.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' })}</span></div>`;
+            lastDate = t.date;
+        }
+        html += taskCard(t);
+    });
+    container.innerHTML = html || '<p>No hay acciones registradas.</p>';
+}
+
+// --- NAVEGACIÓN ---
+window.moveDay = (n) => { let d = new Date(currentDate+'T00:00:00'); d.setDate(d.getDate()+n); currentDate=d.toISOString().slice(0,10); render(); };
+window.moveWeek = (n) => { let d = new Date(currentWeekStart+'T00:00:00'); d.setDate(d.getDate()+n); currentWeekStart=d.toISOString().slice(0,10); render(); };
+window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth()+n); render(); };
+
+// --- EVENTOS ---
+document.getElementById('roleLoginBtn').onclick = openLogin;
+document.getElementById('logoutBtn').onclick = logout;
+document.querySelectorAll('.view-switch button').forEach(btn => {
+    btn.onclick = (e) => {
+        document.querySelectorAll('.view-switch button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentView = e.target.getAttribute('data-view');
+        render();
+    };
+});
+
+render();
