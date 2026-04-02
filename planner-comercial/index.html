@@ -6,16 +6,17 @@
     <title>Planner Comercial - Metro Ecuador</title>
     <style>
         /* --- EL DISEÑO 10/10 QUE YA TENÍAMOS --- */
-        :root { --libre: #10b981; --reservado: #f59e0b; --vendido: #ef4444; }
+        :root { --libre: #10b981; --reservado: #f59e0b; --vendido: #ef4444; --dark: #1e293b; }
         body { font-family: 'Inter', -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .logo-circle { width: 50px; height: 50px; background: #1e293b; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo-circle { width: 50px; height: 50px; background: var(--dark); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
         
         .auth-controls { display: flex; align-items: center; gap: 12px; }
-        button { padding: 10px 16px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-weight: 500; }
-        .btn-orange { background: #f97316 !important; color: white !important; border: none !important; height: 38px; margin: 0; font-weight: bold; }
+        button { padding: 10px 16px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        .btn-orange { background: #f97316 !important; color: white !important; border: none !important; height: 40px; margin: 0; font-weight: bold; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; text-align: center; }
@@ -23,9 +24,9 @@
         .stat-card p { font-size: 32px; font-weight: bold; margin: 10px 0 0 0; }
 
         .view-switch { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; }
-        .view-switch button.active { background: #1e293b; color: white; }
+        .view-switch button.active { background: var(--dark); color: white; border-color: var(--dark); }
 
-        /* Franjas de colores (Task Cards) */
+        /* Tarjetas con Franjas de Colores */
         .task-item { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: start; }
         .is-libre { border-left-color: var(--libre); background: #f0fdf4; }
         .is-reservado { border-left-color: var(--reservado); background: #fffbeb; }
@@ -36,23 +37,24 @@
         .badge.reservado { background: #fef3c7; color: #92400e; }
         .badge.vendido { background: #fee2e2; color: #991b1b; }
 
-        .btn-mini { padding: 4px 8px; font-size: 11px; border-radius: 5px; background: #f1f5f9; border: 1px solid #cbd5e1; cursor: pointer; }
+        .btn-mini { padding: 5px 10px; font-size: 11px; border-radius: 6px; background: white; border: 1px solid #cbd5e1; cursor: pointer; }
 
-        /* Grillas */
+        /* Grillas de Vistas */
         .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .day-col { background: #f8fafc; border-radius: 12px; padding: 10px; min-height: 350px; border: 1px solid #e2e8f0; }
-        .m-day { background: white; border: 1px solid #e2e8f0; padding: 10px; min-height: 100px; border-radius: 8px; cursor: pointer; }
+        .day-col { background: #f8fafc; border-radius: 12px; padding: 10px; min-height: 350px; border: 1px solid #e2e8f0; cursor: pointer; }
+        .m-day { background: white; border: 1px solid #e2e8f0; padding: 8px; min-height: 90px; border-radius: 10px; cursor: pointer; transition: 0.2s; overflow: hidden; }
+        .m-day:hover { border-color: var(--dark); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 450px; }
-        input, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="header-top">
-                <div style="display:flex; align-items:center; gap:15px;">
+                <div class="logo-area">
                     <div class="logo-circle">ME</div>
                     <div>
                         <h1 style="margin:0; font-size: 24px;">Planner Comercial - Dashboard</h1>
@@ -60,7 +62,7 @@
                     </div>
                 </div>
                 <div class="auth-controls">
-                    <span id="authStatus" style="font-size: 14px; font-weight: bold;">👁️ Modo público</span>
+                    <span id="authStatus" style="font-size: 14px; font-weight: bold; color: #64748b;">👁️ Modo público</span>
                     <button id="roleLoginBtn" onclick="openLogin()">Ingresar</button>
                     <button id="logoutBtn" style="display:none;" onclick="logout()">Cerrar sesión</button>
                     <button id="btnNuevaAccion" class="btn-orange" style="display:none;" onclick="openActionModal()">+ Nueva acción</button>
@@ -75,14 +77,14 @@
             </div>
 
             <div class="view-switch">
-                <button class="view-btn active" onclick="setView('lista', this)">Vista lista</button>
-                <button class="view-btn" onclick="setView('diaria', this)">Vista diaria</button>
-                <button class="view-btn" onclick="setView('semanal', this)">Vista semanal</button>
-                <button class="view-btn" onclick="setView('mensual', this)">Vista mensual</button>
+                <button id="btn-lista" class="active" onclick="setView('lista', this)">Vista lista</button>
+                <button onclick="setView('diaria', this)">Vista diaria</button>
+                <button onclick="setView('semanal', this)">Vista semanal</button>
+                <button onclick="setView('mensual', this)">Vista mensual</button>
             </div>
         </header>
 
-        <main id="content">
+        <main id="mainContent">
             </main>
     </div>
 
@@ -91,7 +93,7 @@
             <h2 style="margin:0;">Acceso Personal Metro</h2>
             <input type="text" id="userInput" placeholder="Usuario">
             <input type="password" id="passInput" placeholder="Contraseña">
-            <button onclick="attemptLogin()" style="width:100%; padding:12px; background:#1e293b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Entrar</button>
+            <button onclick="attemptLogin()" style="width:100%; padding:14px; background:var(--dark); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">Entrar</button>
             <button onclick="closeLogin()" style="width:100%; border:none; color:gray; background:none; cursor:pointer; margin-top:10px;">Cancelar</button>
         </div>
     </div>
@@ -99,7 +101,7 @@
     <div id="actionModal" class="modal">
         <div class="modal-content">
             <h2 style="margin:0;">Nueva Acción Mundialista</h2>
-            <input type="text" id="newTitle" placeholder="Título de la Acción">
+            <input type="text" id="newTitle" placeholder="Título de la Acción (Ej: Previa Ecuador)">
             <div style="display:flex; gap:10px;">
                 <input type="date" id="newDate">
                 <input type="time" id="newTime">
@@ -115,13 +117,13 @@
                 <option value="reservado">Reservado</option>
                 <option value="vendido">Vendido</option>
             </select>
-            <button onclick="saveAction()" class="btn-orange" style="width:100%; margin-top:10px;">Guardar Acción</button>
+            <button onclick="saveAction()" class="btn-orange" style="width:100%; margin-top:10px; height:45px;">Guardar Acción</button>
             <button onclick="closeActionModal()" style="width:100%; border:none; color:gray; background:none; cursor:pointer; margin-top:10px;">Cerrar</button>
         </div>
     </div>
 
     <script>
-        /* --- EL CEREBRO 10/10 --- */
+        /* --- EL CEREBRO DE METRO ECUADOR (JS) --- */
         const USERS = { "editorial": { pass: "metro2026", role: "Editorial" } };
         let currentUser = null;
         let currentView = 'lista';
@@ -136,12 +138,12 @@
         ];
 
         function render() {
-            const c = document.getElementById('content');
+            const container = document.getElementById('mainContent');
             updateStats();
-            if (currentView === 'lista') renderList(c);
-            else if (currentView === 'diaria') renderDaily(c);
-            else if (currentView === 'semanal') renderWeekly(c);
-            else if (currentView === 'mensual') renderMonthly(c);
+            if (currentView === 'lista') renderList(container);
+            else if (currentView === 'diaria') renderDaily(container);
+            else if (currentView === 'semanal') renderWeekly(container);
+            else if (currentView === 'mensual') renderMonthly(container);
         }
 
         function updateStats() {
@@ -170,7 +172,7 @@
             let lastDate = null;
             [...tasks].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t => {
                 if (t.date !== lastDate) {
-                    html += `<div style="background:#e2e8f0; padding:12px; margin:25px 0 10px 0; border-radius:10px; font-weight:bold; border-left:5px solid #1e293b;">📅 ${t.date}</div>`;
+                    html += `<div style="background:#e2e8f0; padding:12px; margin:25px 0 10px 0; border-radius:10px; font-weight:bold; border-left:5px solid var(--dark);">📅 ${t.date}</div>`;
                     lastDate = t.date;
                 }
                 html += taskCard(t);
@@ -180,62 +182,71 @@
 
         function renderDaily(c) {
             const filtered = tasks.filter(t => t.date === currentDate);
-            c.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2>Día: ${currentDate}</h2><div><button onclick="moveDay(-1)">Anterior</button> <button onclick="moveDay(1)">Siguiente</button></div></div>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>');
+            c.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2>Día: ${currentDate}</h2><div><button onclick="moveDay(-1)">⬅️ Anterior</button> <button onclick="moveDay(1)">Siguiente ➡️</button></div></div>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones planificadas.</p>');
         }
 
         function renderWeekly(c) {
             let html = '<div class="grid-7">';
             for (let i = 0; i < 7; i++) {
                 let d = new Date(currentWeekStart); d.setDate(currentWeekStart.getDate() + i);
-                let dStr = d.toISOString().slice(0, 10);
-                let dayTasks = tasks.filter(t => t.date === dStr);
-                html += `<div class="day-col" onclick="currentDate='${dStr}'; setView('diaria', null)"><div style="font-weight:bold; font-size:11px; margin-bottom:10px;">${dStr}</div>${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; display:block; margin-bottom:2px;">${t.title.substring(0,10)}...</div>`).join('')}</div>`;
+                let ds = d.toISOString().slice(0, 10);
+                let dt = tasks.filter(t => t.date === ds);
+                html += `<div class="day-col" onclick="currentDate='${ds}'; setView('diaria', null)"><div style="font-weight:bold; font-size:11px; margin-bottom:10px;">${ds}</div>${dt.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; display:block; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>`).join('')}</div>`;
             }
-            c.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Anterior</button> <button onclick="moveWeek(7)">Siguiente</button></div></div>${html}</div>`;
+            c.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Atrás</button> <button onclick="moveWeek(7)">Adelante</button></div></div>${html}</div>`;
         }
 
         function renderMonthly(c) {
             const year = currentMonth.getFullYear(); const month = currentMonth.getMonth();
             const lastDay = new Date(year, month + 1, 0).getDate();
             const offset = (new Date(year, month, 1).getDay() + 6) % 7;
-            const names = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            const monthsNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            
             let opts = "";
-            [2025, 2026, 2027].forEach(y => names.forEach((m, i) => opts += `<option value="${y}-${i}" ${(y===year && i===month)?'selected':''}>${m} ${y}</option>`));
+            [2025, 2026, 2027].forEach(y => monthsNames.forEach((m, i) => opts += `<option value="${y}-${i}" ${(y===year && i===month)?'selected':''}>${m} ${y}</option>`));
 
             let grid = '<div class="grid-7">';
-            ['Lu','Ma','Mi','Ju','Vi','Sa','Do'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:11px;">${d}</div>`);
+            ['Lu','Ma','Mi','Ju','Vi','Sa','Do'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:11px; padding:5px;">${d}</div>`);
             for(let i=0; i<offset; i++) grid += '<div></div>';
             for(let d=1; d<=lastDay; d++) {
                 let ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 let dt = tasks.filter(t => t.date === ds);
-                grid += `<div class="m-day" onclick="currentDate='${ds}'; setView('diaria', null)"><strong>${d}</strong>${dt.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:7px; display:block;">${t.title.substring(0,6)}</div>`).join('')}</div>`;
+                grid += `<div class="m-day" onclick="currentDate='${ds}'; setView('diaria', null)"><strong>${d}</strong>${dt.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; display:block; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>`).join('')}</div>`;
             }
             c.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <div style="display:flex; align-items:center; gap:10px;"><h2 style="margin:0;">${names[month]} ${year}</h2>
-                <select onchange="let v=this.value.split('-'); currentMonth.setFullYear(v[0]); currentMonth.setMonth(v[1]); render();" style="width:auto; margin:0;">${opts}</select></div>
+                <div style="display:flex; align-items:center; gap:12px;"><h2 style="margin:0; text-transform:capitalize;">${monthsNames[month]} ${year}</h2>
+                <select onchange="let v=this.value.split('-'); currentMonth.setFullYear(v[0]); currentMonth.setMonth(v[1]); render();" style="width:auto; margin:0; padding:5px; border-radius:8px; border:1px solid #ddd; cursor:pointer;">${opts}</select></div>
                 <div><button onclick="moveMonth(-1)">⬅️</button> <button onclick="moveMonth(1)">➡️</button></div>
             </div>${grid}</div>`;
         }
 
-        /* --- FUNCIONES --- */
-        window.setView = (v, btn) => { currentView = v; if(btn){document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');} render(); };
+        /* --- FUNCIONES DE NAVEGACIÓN Y LOGIN --- */
+        window.setView = (v, btn) => { currentView = v; if(btn){document.querySelectorAll('.view-switch button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');} render(); };
         window.moveDay = (n) => { let d = new Date(currentDate + 'T00:00:00'); d.setDate(d.getDate()+n); currentDate = d.toISOString().slice(0,10); render(); };
         window.moveWeek = (n) => { currentWeekStart.setDate(currentWeekStart.getDate()+n); render(); };
         window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth()+n); render(); };
+        
         window.openLogin = () => document.getElementById('loginModal').style.display = 'flex';
         window.closeLogin = () => document.getElementById('loginModal').style.display = 'none';
         window.openActionModal = () => document.getElementById('actionModal').style.display = 'flex';
         window.closeActionModal = () => document.getElementById('actionModal').style.display = 'none';
-        window.attemptLogin = () => { if(document.getElementById('userInput').value === "editorial" && document.getElementById('passInput').value === "metro2026") {
-            currentUser = {role:"Editorial"}; document.getElementById('authStatus').innerText = "● Editorial";
-            document.getElementById('roleLoginBtn').style.display = 'none'; document.getElementById('logoutBtn').style.display = 'block';
-            document.getElementById('btnNuevaAccion').style.display = 'block'; closeLogin(); render();
-        } else alert("Acceso denegado"); };
+
+        window.attemptLogin = () => {
+            if(document.getElementById('userInput').value === "editorial" && document.getElementById('passInput').value === "metro2026") {
+                currentUser = {role:"Editorial"}; document.getElementById('authStatus').innerHTML = "● Editorial";
+                document.getElementById('roleLoginBtn').style.display = 'none'; document.getElementById('logoutBtn').style.display = 'block';
+                document.getElementById('btnNuevaAccion').style.display = 'block'; closeLogin(); render();
+            } else alert("Usuario o clave incorrectos");
+        };
         window.logout = () => location.reload();
+
         window.saveAction = () => {
-            const t = { id: Date.now(), title: document.getElementById('newTitle').value, date: document.getElementById('newDate').value, time: document.getElementById('newTime').value, responsible: document.getElementById('newResp').value, bookingStatus: document.getElementById('newStatus').value };
-            if(!t.title || !t.date) return alert("Faltan datos");
-            tasks.push(t); closeActionModal(); render();
+            const title = document.getElementById('newTitle').value;
+            const date = document.getElementById('newDate').value;
+            const time = document.getElementById('newTime').value;
+            if(!title || !date) return alert("Completa los campos");
+            tasks.push({ id: Date.now(), title, date, time, responsible: document.getElementById('newResp').value, bookingStatus: document.getElementById('newStatus').value });
+            closeActionModal(); render();
         };
 
         render();
