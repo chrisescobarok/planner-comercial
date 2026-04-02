@@ -1,4 +1,5 @@
-const tasks = [
+// --- DATOS Y CONFIGURACIÓN ---
+let tasks = [
     { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '' },
     { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki' },
     { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' }
@@ -6,8 +7,10 @@ const tasks = [
 
 let currentView = 'diaria';
 let currentDate = '2026-06-14';
+let currentWeekStart = '2026-06-08'; 
 let currentMonth = new Date('2026-06-01T00:00:00');
 
+// --- MOTOR DE RENDERIZADO ---
 function render() {
     const content = document.getElementById('content');
     updateStats();
@@ -39,15 +42,38 @@ function taskCard(t) {
     `;
 }
 
+// --- VISTAS ---
 function renderDaily(container) {
     const filtered = tasks.filter(t => t.date === currentDate);
     container.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2>Día: ${currentDate}</h2>
-            <div><button onclick="moveDay(-1)">Anterior</button> <button onclick="moveDay(1)">Siguiente</button></div>
+            <h2>Vista Diaria</h2>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <button onclick="moveDay(-1)">Anterior</button>
+                <input type="date" value="${currentDate}" onchange="currentDate=this.value; render();" style="padding:8px; border-radius:8px; border:1px solid #ddd;">
+                <button onclick="moveDay(1)">Siguiente</button>
+            </div>
         </div>
-        ${filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>'}
+        ${filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones para esta fecha.</p>'}
     `;
+}
+
+function renderWeekly(container) {
+    const start = new Date(currentWeekStart + 'T00:00:00');
+    let html = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:12px;">';
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        const dStr = d.toISOString().slice(0, 10);
+        const dayTasks = tasks.filter(t => t.date === dStr);
+        html += `
+            <div style="background:white; border:1px solid #eee; border-radius:12px; padding:10px; min-height:250px;">
+                <div style="font-weight:bold; font-size:12px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:10px;">${dStr}</div>
+                ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block;">${t.time} ${t.title.substring(0,15)}...</div>`).join('')}
+            </div>`;
+    }
+    html += '</div>';
+    container.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Semana Anterior</button> <button onclick="moveWeek(7)">Semana Siguiente</button></div></div>${html}`;
 }
 
 function renderMonthly(container) {
@@ -72,8 +98,17 @@ function renderMonthly(container) {
     container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 style="text-transform:capitalize;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2><div><button onclick="moveMonth(-1)">Anterior</button> <button onclick="moveMonth(1)">Siguiente</button></div></div>${grid}`;
 }
 
+function renderList(container) {
+    container.innerHTML = `<h2>Lista de Acciones</h2>` + tasks.sort((a,b)=>a.date.localeCompare(b.date)).map(t => taskCard(t)).join('');
+}
+
+// --- NAVEGACIÓN ---
 window.moveDay = (n) => { let d = new Date(currentDate+'T00:00:00'); d.setDate(d.getDate()+n); currentDate=d.toISOString().slice(0,10); render(); };
+window.moveWeek = (n) => { let d = new Date(currentWeekStart+'T00:00:00'); d.setDate(d.getDate()+n); currentWeekStart=d.toISOString().slice(0,10); render(); };
 window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth()+n); render(); };
+
+// --- LOGIN Y VISTAS ---
+document.getElementById('roleLoginBtn').addEventListener('click', () => alert('El sistema de login se activará cuando conectemos Supabase. Por ahora usa el Modo Público.'));
 
 document.querySelectorAll('.view-switch button').forEach(btn => {
     btn.addEventListener('click', (e) => {
