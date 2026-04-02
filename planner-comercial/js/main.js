@@ -1,4 +1,4 @@
-// --- DATOS Y CONFIGURACIÓN ---
+// --- DATOS DE PRUEBA (MUNDIAL JUNIO 2026) ---
 let tasks = [
     { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '' },
     { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki' },
@@ -6,7 +6,8 @@ let tasks = [
     { id: 5, title: 'Análisis Post-Partido', responsible: 'Carlos Bolaños', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-15', time: '10:00', client: '' }
 ];
 
-let currentView = 'diaria';
+// --- VARIABLES DE ESTADO INICIAL ---
+let currentView = 'lista'; // Empezamos en lista para que veas contenido de una
 let currentDate = '2026-06-14';
 let currentWeekStart = '2026-06-08'; 
 let currentMonth = new Date('2026-06-01T00:00:00');
@@ -14,11 +15,14 @@ let currentMonth = new Date('2026-06-01T00:00:00');
 // --- MOTOR DE RENDERIZADO ---
 function render() {
     const content = document.getElementById('content');
+    if (!content) return;
+    
     updateStats();
+    
     if (currentView === 'diaria') renderDaily(content);
-    if (currentView === 'semanal') renderWeekly(content);
-    if (currentView === 'mensual') renderMonthly(content);
-    if (currentView === 'lista') renderList(content);
+    else if (currentView === 'semanal') renderWeekly(content);
+    else if (currentView === 'mensual') renderMonthly(content);
+    else if (currentView === 'lista') renderList(content);
 }
 
 function updateStats() {
@@ -43,33 +47,7 @@ function taskCard(t) {
     `;
 }
 
-// --- VISTA LISTA CON FRANJAS DE DÍA ---
-function renderList(container) {
-    const sortedTasks = [...tasks].sort((a, b) => {
-        if (a.date !== b.date) return a.date.localeCompare(b.date);
-        return a.time.localeCompare(b.time);
-    });
-
-    let html = '<h2>Cronograma Detallado</h2>';
-    let lastDate = null;
-
-    sortedTasks.forEach(t => {
-        if (t.date !== lastDate) {
-            const dateObj = new Date(t.date + 'T00:00:00');
-            const dayLabel = dateObj.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' });
-            
-            html += `
-                <div style="background: #e2e8f0; padding: 12px 20px; margin: 30px 0 15px 0; border-radius: 12px; display: flex; align-items: center; gap: 10px; border-left: 6px solid #1e293b;">
-                    <span style="text-transform: capitalize; font-weight: 800; color: #1e293b; font-size: 16px;">📅 ${dayLabel}</span>
-                </div>`;
-            lastDate = t.date;
-        }
-        html += taskCard(t);
-    });
-    container.innerHTML = html || '<p>No hay acciones registradas.</p>';
-}
-
-// --- VISTAS RESTANTES ---
+// --- VISTA DIARIA ---
 function renderDaily(container) {
     const filtered = tasks.filter(t => t.date === currentDate);
     container.innerHTML = `
@@ -81,4 +59,15 @@ function renderDaily(container) {
                 <button onclick="moveDay(1)">Siguiente</button>
             </div>
         </div>
-        ${filtered
+        ${filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones para esta fecha.</p>'}
+    `;
+}
+
+// --- VISTA SEMANAL ---
+function renderWeekly(container) {
+    const start = new Date(currentWeekStart + 'T00:00:00');
+    let html = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:12px;">';
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        const dStr = d.
