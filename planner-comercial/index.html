@@ -6,8 +6,10 @@
     <title>Planner Comercial - Metro Ecuador</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
+        /* Ajuste de emergencia para alinear botones arriba */
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .auth-controls { display: flex; align-items: center; gap: 10px; }
+        #btnNuevaAccion { height: 38px; margin: 0; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -23,9 +25,9 @@
                 </div>
                 <div class="auth-controls">
                     <span id="authStatus">👁️ Modo público</span>
-                    <button id="roleLoginBtn" class="btn-secondary">Ingresar</button>
-                    <button id="logoutBtn" class="btn-secondary" style="display:none;">Cerrar sesión</button>
-                    <button id="btnNuevaAccion" style="display:none; background:#f97316; color:white; font-weight:bold; border:none; padding:8px 15px; border-radius:10px; cursor:pointer; height:38px; margin:0;">+ Nueva acción</button>
+                    <button id="roleLoginBtn" class="btn-secondary" onclick="openLogin()">Ingresar</button>
+                    <button id="logoutBtn" class="btn-secondary" style="display:none;" onclick="logout()">Cerrar sesión</button>
+                    <button id="btnNuevaAccion" style="display:none; background:#f97316; color:white; font-weight:bold; border:none; padding:8px 15px; border-radius:10px; cursor:pointer;" onclick="openActionModal()">+ Nueva acción</button>
                 </div>
             </div>
 
@@ -48,38 +50,16 @@
             </main>
     </div>
 
-    <div id="loginModal" class="modal">
+    <div id="loginModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>Acceso Personal Metro</h2>
-            <input type="text" id="userInput" placeholder="Usuario">
-            <input type="password" id="passInput" placeholder="Contraseña">
-            <button onclick="attemptLogin()" class="btn-primary" style="width:100%; margin-top:10px;">Entrar</button>
-            <button onclick="closeLogin()" class="btn-mini" style="margin-top:10px;">Cancelar</button>
+            <div style="margin-top:15px;">
+                <input type="text" id="userInput" placeholder="Usuario" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+                <input type="password" id="passInput" placeholder="Contraseña" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+                <button onclick="attemptLogin()" class="btn-primary" style="width:100%;">Entrar</button>
+                <button onclick="closeLogin()" style="width:100%; margin-top:10px; background:none; border:none; color:gray; cursor:pointer;">Cancelar</button>
+            </div>
         </div>
     </div>
 
-    <div id="actionModal" class="modal">
-        <div class="modal-content">
-            <h2>Nueva Acción Planificada</h2>
-            <input type="text" id="newTitle" placeholder="Título de la Acción">
-            <input type="date" id="newDate">
-            <input type="time" id="newTime">
-            <select id="newResp">
-                <option value="Christian">Christian</option>
-                <option value="Andrea">Andrea</option>
-                <option value="Gaby Vaca">Gaby Vaca</option>
-                <option value="Carlos Bolaños">Carlos Bolaños</option>
-            </select>
-            <select id="newStatus">
-                <option value="libre">Libre</option>
-                <option value="reservado">Reservado</option>
-                <option value="vendido">Vendido</option>
-            </select>
-            <button onclick="saveNewAction()" class="btn-primary" style="width:100%; margin-top:15px;">Guardar</button>
-            <button onclick="closeActionModal()" class="btn-mini" style="margin-top:10px;">Cerrar</button>
-        </div>
-    </div>
-
-    <script src="js/main.js"></script>
-</body>
-</html>
+    <div id="actionModal" class="modal" style="display:none
