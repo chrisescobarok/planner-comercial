@@ -5,57 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planner Comercial - Metro Ecuador</title>
     <style>
-        /* --- CSS PREMIUM --- */
+        /* --- EL DISEÑO 10/10 QUE YA TENÍAMOS --- */
+        :root { --libre: #10b981; --reservado: #f59e0b; --vendido: #ef4444; }
         body { font-family: 'Inter', -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .logo-area { display: flex; align-items: center; gap: 15px; }
         .logo-circle { width: 50px; height: 50px; background: #1e293b; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
         
         .auth-controls { display: flex; align-items: center; gap: 12px; }
-        button { padding: 10px 16px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-weight: 500; transition: 0.2s; }
-        .btn-orange { background: #f97316 !important; color: white !important; border: none !important; font-weight: bold; height: 40px; margin: 0; }
-        .btn-dark { background: #1e293b !important; color: white !important; border: none !important; height: 40px; }
-
+        button { padding: 10px 16px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-weight: 500; }
+        .btn-orange { background: #f97316 !important; color: white !important; border: none !important; height: 38px; margin: 0; font-weight: bold; }
+        
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; text-align: center; }
         .stat-card h3 { font-size: 13px; color: #64748b; margin: 0; text-transform: uppercase; }
         .stat-card p { font-size: 32px; font-weight: bold; margin: 10px 0 0 0; }
 
         .view-switch { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; }
-        .view-btn.active { background: #1e293b; color: white; }
+        .view-switch button.active { background: #1e293b; color: white; }
 
-        /* Estilos de Acciones (Franjas) */
-        .task-item { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; }
-        .is-libre { border-left-color: #10b981; background: #f0fdf4; }
-        .is-reservado { border-left-color: #f59e0b; background: #fffbeb; }
-        .is-vendido { border-left-color: #ef4444; background: #fef2f2; }
+        /* Franjas de colores (Task Cards) */
+        .task-item { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: start; }
+        .is-libre { border-left-color: var(--libre); background: #f0fdf4; }
+        .is-reservado { border-left-color: var(--reservado); background: #fffbeb; }
+        .is-vendido { border-left-color: var(--vendido); background: #fef2f2; }
         
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; margin-bottom: 8px; }
         .badge.libre { background: #dcfce7; color: #166534; }
         .badge.reservado { background: #fef3c7; color: #92400e; }
         .badge.vendido { background: #fee2e2; color: #991b1b; }
 
-        /* Vistas Especiales */
-        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .day-col { background: #f8fafc; border-radius: 12px; padding: 10px; min-height: 400px; border: 1px solid #e2e8f0; }
-        .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .m-day { background: white; border: 1px solid #e2e8f0; padding: 10px; min-height: 90px; border-radius: 8px; cursor: pointer; }
+        .btn-mini { padding: 4px 8px; font-size: 11px; border-radius: 5px; background: #f1f5f9; border: 1px solid #cbd5e1; cursor: pointer; }
+
+        /* Grillas */
+        .grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .day-col { background: #f8fafc; border-radius: 12px; padding: 10px; min-height: 350px; border: 1px solid #e2e8f0; }
+        .m-day { background: white; border: 1px solid #e2e8f0; padding: 10px; min-height: 100px; border-radius: 8px; cursor: pointer; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { background: white; padding: 30px; border-radius: 20px; width: 450px; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="header-top">
-                <div class="logo-area">
+                <div style="display:flex; align-items:center; gap:15px;">
                     <div class="logo-circle">ME</div>
                     <div>
                         <h1 style="margin:0; font-size: 24px;">Planner Comercial - Dashboard</h1>
-                        <p style="margin:5px 0 0 0; color: #64748b;">Visualización de contenido editorial y comercial</p>
+                        <p style="margin:5px 0 0 0; color: #64748b; font-size: 14px;">Visualización de contenido editorial y comercial</p>
                     </div>
                 </div>
                 <div class="auth-controls">
@@ -81,46 +82,46 @@
             </div>
         </header>
 
-        <main id="mainArea">
+        <main id="content">
             </main>
     </div>
 
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <h2 style="margin:0;">Acceso Personal Metro</h2>
-            <input type="text" id="userInput" placeholder="Usuario" style="width:100%; padding:10px; margin:15px 0; border:1px solid #ddd; border-radius:8px;">
-            <input type="password" id="passInput" placeholder="Contraseña" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;">
-            <button onclick="attemptLogin()" class="btn-dark" style="width:100%;">Entrar</button>
-            <button onclick="closeLogin()" style="width:100%; border:none; color:gray; margin-top:10px; background:none;">Cancelar</button>
+            <input type="text" id="userInput" placeholder="Usuario">
+            <input type="password" id="passInput" placeholder="Contraseña">
+            <button onclick="attemptLogin()" style="width:100%; padding:12px; background:#1e293b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Entrar</button>
+            <button onclick="closeLogin()" style="width:100%; border:none; color:gray; background:none; cursor:pointer; margin-top:10px;">Cancelar</button>
         </div>
     </div>
 
     <div id="actionModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin:0;">Nueva Acción</h2>
-            <input type="text" id="newTitle" placeholder="Título" style="width:100%; padding:10px; margin:15px 0; border:1px solid #ddd; border-radius:8px;">
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <input type="date" id="newDate" style="width:50%; padding:10px; border:1px solid #ddd; border-radius:8px;">
-                <input type="time" id="newTime" style="width:50%; padding:10px; border:1px solid #ddd; border-radius:8px;">
+            <h2 style="margin:0;">Nueva Acción Mundialista</h2>
+            <input type="text" id="newTitle" placeholder="Título de la Acción">
+            <div style="display:flex; gap:10px;">
+                <input type="date" id="newDate">
+                <input type="time" id="newTime">
             </div>
-            <select id="newResp" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;">
+            <select id="newResp">
                 <option value="Christian">Christian</option>
                 <option value="Andrea">Andrea</option>
                 <option value="Gaby Vaca">Gaby Vaca</option>
                 <option value="Carlos Bolaños">Carlos Bolaños</option>
             </select>
-            <select id="newStatus" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;">
+            <select id="newStatus">
                 <option value="libre">Libre</option>
                 <option value="reservado">Reservado</option>
                 <option value="vendido">Vendido</option>
             </select>
-            <button onclick="saveAction()" class="btn-orange" style="width:100%;">Guardar Acción</button>
-            <button onclick="closeActionModal()" style="width:100%; border:none; color:gray; margin-top:10px; background:none;">Cerrar</button>
+            <button onclick="saveAction()" class="btn-orange" style="width:100%; margin-top:10px;">Guardar Acción</button>
+            <button onclick="closeActionModal()" style="width:100%; border:none; color:gray; background:none; cursor:pointer; margin-top:10px;">Cerrar</button>
         </div>
     </div>
 
     <script>
-        /* --- JAVASCRIPT DEL EDITOR --- */
+        /* --- EL CEREBRO 10/10 --- */
         const USERS = { "editorial": { pass: "metro2026", role: "Editorial" } };
         let currentUser = null;
         let currentView = 'lista';
@@ -135,13 +136,12 @@
         ];
 
         function render() {
-            const area = document.getElementById('mainArea');
+            const c = document.getElementById('content');
             updateStats();
-
-            if (currentView === 'lista') renderList(area);
-            else if (currentView === 'diaria') renderDaily(area);
-            else if (currentView === 'semanal') renderWeekly(area);
-            else if (currentView === 'mensual') renderMonthly(area);
+            if (currentView === 'lista') renderList(c);
+            else if (currentView === 'diaria') renderDaily(c);
+            else if (currentView === 'semanal') renderWeekly(c);
+            else if (currentView === 'mensual') renderMonthly(c);
         }
 
         function updateStats() {
@@ -152,12 +152,14 @@
         }
 
         function taskCard(t) {
+            let btn = currentUser ? `<button class="btn-mini">Editar</button>` : '';
             return `
             <div class="task-item is-${t.bookingStatus}">
                 <div>
                     <span class="badge ${t.bookingStatus}">${t.bookingStatus}</span>
                     <div style="font-size:18px; font-weight:bold; margin-top:8px;">${t.title}</div>
-                    <div style="color:gray; font-size:13px; margin-top:5px;">📅 ${t.date} | 🕒 ${t.time} | 👤 ${t.responsible}</div>
+                    <div style="color:gray; font-size:13px; margin-top:5px;">🕒 ${t.time} | 👤 ${t.responsible}</div>
+                    <div style="margin-top:10px;">${btn}</div>
                 </div>
                 ${t.client ? `<div style="text-align:right;"><small>Cliente</small><br><strong>${t.client}</strong></div>` : ''}
             </div>`;
@@ -165,30 +167,31 @@
 
         function renderList(c) {
             let html = '<h2>Cronograma Detallado</h2>';
-            tasks.sort((a,b) => a.date.localeCompare(b.date)).forEach(t => html += taskCard(t));
+            let lastDate = null;
+            [...tasks].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t => {
+                if (t.date !== lastDate) {
+                    html += `<div style="background:#e2e8f0; padding:12px; margin:25px 0 10px 0; border-radius:10px; font-weight:bold; border-left:5px solid #1e293b;">📅 ${t.date}</div>`;
+                    lastDate = t.date;
+                }
+                html += taskCard(t);
+            });
             c.innerHTML = html;
         }
 
         function renderDaily(c) {
             const filtered = tasks.filter(t => t.date === currentDate);
-            c.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2>Día: ${currentDate}</h2>
-                    <div><button onclick="moveDay(-1)">Anterior</button> <button onclick="moveDay(1)">Siguiente</button></div>
-                </div>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones para este día.</p>');
+            c.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2>Día: ${currentDate}</h2><div><button onclick="moveDay(-1)">Anterior</button> <button onclick="moveDay(1)">Siguiente</button></div></div>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>');
         }
 
         function renderWeekly(c) {
-            let html = '<div class="week-grid">';
-            for(let i=0; i<7; i++) {
+            let html = '<div class="grid-7">';
+            for (let i = 0; i < 7; i++) {
                 let d = new Date(currentWeekStart); d.setDate(currentWeekStart.getDate() + i);
-                let ds = d.toISOString().slice(0,10);
-                let dt = tasks.filter(t => t.date === ds);
-                html += `<div class="day-col"><div style="font-weight:bold; font-size:11px; margin-bottom:10px;">${ds}</div>
-                    ${dt.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; display:block; margin-bottom:2px;">${t.time} ${t.title.substring(0,8)}...</div>`).join('')}
-                </div>`;
+                let dStr = d.toISOString().slice(0, 10);
+                let dayTasks = tasks.filter(t => t.date === dStr);
+                html += `<div class="day-col" onclick="currentDate='${dStr}'; setView('diaria', null)"><div style="font-weight:bold; font-size:11px; margin-bottom:10px;">${dStr}</div>${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; display:block; margin-bottom:2px;">${t.title.substring(0,10)}...</div>`).join('')}</div>`;
             }
-            c.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Atrás</button> <button onclick="moveWeek(7)">Adelante</button></div></div>${html}</div>`;
+            c.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Anterior</button> <button onclick="moveWeek(7)">Siguiente</button></div></div>${html}</div>`;
         }
 
         function renderMonthly(c) {
@@ -196,57 +199,46 @@
             const lastDay = new Date(year, month + 1, 0).getDate();
             const offset = (new Date(year, month, 1).getDay() + 6) % 7;
             const names = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            
             let opts = "";
             [2025, 2026, 2027].forEach(y => names.forEach((m, i) => opts += `<option value="${y}-${i}" ${(y===year && i===month)?'selected':''}>${m} ${y}</option>`));
 
-            let grid = '<div class="month-grid">';
-            ['Lu','Ma','Mi','Ju','Vi','Sa','Do'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:11px; padding:5px;">${d}</div>`);
+            let grid = '<div class="grid-7">';
+            ['Lu','Ma','Mi','Ju','Vi','Sa','Do'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:11px;">${d}</div>`);
             for(let i=0; i<offset; i++) grid += '<div></div>';
             for(let d=1; d<=lastDay; d++) {
                 let ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 let dt = tasks.filter(t => t.date === ds);
-                grid += `<div class="m-day" onclick="currentDate='${ds}'; setView('diaria', null)"><strong>${d}</strong>${dt.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:7px; display:block; overflow:hidden;">${t.title.substring(0,6)}</div>`).join('')}</div>`;
+                grid += `<div class="m-day" onclick="currentDate='${ds}'; setView('diaria', null)"><strong>${d}</strong>${dt.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:7px; display:block;">${t.title.substring(0,6)}</div>`).join('')}</div>`;
             }
             c.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <div style="display:flex; gap:10px; align-items:center;"><h2 style="margin:0;">${names[month]} ${year}</h2>
-                <select onchange="let v=this.value.split('-'); currentMonth.setFullYear(v[0]); currentMonth.setMonth(v[1]); render();" style="padding:5px; border-radius:8px;">${opts}</select></div>
+                <div style="display:flex; align-items:center; gap:10px;"><h2 style="margin:0;">${names[month]} ${year}</h2>
+                <select onchange="let v=this.value.split('-'); currentMonth.setFullYear(v[0]); currentMonth.setMonth(v[1]); render();" style="width:auto; margin:0;">${opts}</select></div>
                 <div><button onclick="moveMonth(-1)">⬅️</button> <button onclick="moveMonth(1)">➡️</button></div>
             </div>${grid}</div>`;
         }
 
+        /* --- FUNCIONES --- */
+        window.setView = (v, btn) => { currentView = v; if(btn){document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');} render(); };
         window.moveDay = (n) => { let d = new Date(currentDate + 'T00:00:00'); d.setDate(d.getDate()+n); currentDate = d.toISOString().slice(0,10); render(); };
         window.moveWeek = (n) => { currentWeekStart.setDate(currentWeekStart.getDate()+n); render(); };
         window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth()+n); render(); };
-        window.setView = (v, btn) => { 
-            currentView = v; 
-            if(btn) { document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-            render(); 
-        };
-
         window.openLogin = () => document.getElementById('loginModal').style.display = 'flex';
         window.closeLogin = () => document.getElementById('loginModal').style.display = 'none';
         window.openActionModal = () => document.getElementById('actionModal').style.display = 'flex';
         window.closeActionModal = () => document.getElementById('actionModal').style.display = 'none';
-        window.attemptLogin = () => {
-            const u = document.getElementById('userInput').value;
-            const p = document.getElementById('passInput').value;
-            if (u === "editorial" && p === "metro2026") {
-                document.getElementById('authStatus').innerText = "● Editorial";
-                document.getElementById('roleLoginBtn').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'block';
-                document.getElementById('btnNuevaAccion').style.display = 'block';
-                closeLogin();
-            } else { alert("Acceso denegado"); }
-        };
-        window.logout = () => { location.reload(); };
+        window.attemptLogin = () => { if(document.getElementById('userInput').value === "editorial" && document.getElementById('passInput').value === "metro2026") {
+            currentUser = {role:"Editorial"}; document.getElementById('authStatus').innerText = "● Editorial";
+            document.getElementById('roleLoginBtn').style.display = 'none'; document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('btnNuevaAccion').style.display = 'block'; closeLogin(); render();
+        } else alert("Acceso denegado"); };
+        window.logout = () => location.reload();
         window.saveAction = () => {
             const t = { id: Date.now(), title: document.getElementById('newTitle').value, date: document.getElementById('newDate').value, time: document.getElementById('newTime').value, responsible: document.getElementById('newResp').value, bookingStatus: document.getElementById('newStatus').value };
             if(!t.title || !t.date) return alert("Faltan datos");
             tasks.push(t); closeActionModal(); render();
         };
 
-        window.onload = render;
+        render();
     </script>
 </body>
 </html>
