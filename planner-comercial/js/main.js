@@ -125,22 +125,47 @@ function renderMonthly(container) {
     const lastDay = new Date(year, month + 1, 0).getDate();
     const firstDay = new Date(year, month, 1);
     const offset = (firstDay.getDay() + 6) % 7;
+
+    // Generador de Menú Desplegable
+    let monthOptions = "";
+    const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    [2025, 2026, 2027].forEach(y => {
+        monthNames.forEach((m, i) => {
+            const isSelected = (y === year && i === month) ? "selected" : "";
+            monthOptions += `<option value="${y}-${i}" ${isSelected}>${m} ${y}</option>`;
+        });
+    });
+
     let grid = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; background:#f1f5f9; padding:5px; border-radius:12px;">';
     ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:11px; color:#64748b; padding:5px;">${d}</div>`);
     for(let i=0; i<offset; i++) grid += '<div style="background:#f8fafc; border-radius:8px;"></div>';
+    
     for(let d=1; d<=lastDay; d++) {
         const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const dayTasks = tasks.filter(t => t.date === dStr);
-        grid += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="min-height:100px; background:white; border-radius:8px; padding:8px; cursor:pointer;"><strong>${d}</strong>${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px; white-space:nowrap; overflow:hidden;">${t.title}</div>`).join('')}</div>`;
+        grid += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="min-height:100px; background:white; border-radius:8px; padding:8px; cursor:pointer; border-top: 1px solid #eee;">
+            <strong style="font-size:12px;">${d}</strong>
+            ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>`).join('')}
+        </div>`;
     }
+    grid += '</div>';
+
     container.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="text-transform:capitalize; margin:0;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2>
-            <div style="display:flex; gap:10px;">
-                <button onclick="moveMonth(-1)" style="padding:5px 12px; cursor:pointer; border-radius:8px; border:1px solid #ddd; background:white;">⬅️ Anterior</button>
-                <button onclick="moveMonth(1)" style="padding:5px 12px; cursor:pointer; border-radius:8px; border:1px solid #ddd; background:white;">Siguiente ➡️</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <h2 style="text-transform:capitalize; margin:0; font-size:20px;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2>
+                <select onchange="let v=this.value.split('-'); currentMonth.setFullYear(v[0]); currentMonth.setMonth(v[1]); render();" 
+                        style="padding:6px 10px; border-radius:8px; border:1px solid #cbd5e1; background:white; font-size:14px; cursor:pointer; font-weight:500; color:#334155;">
+                    ${monthOptions}
+                </select>
             </div>
-        </div>${grid}</div>`;
+            <div style="display:flex; gap:8px;">
+                <button onclick="moveMonth(-1)" style="padding:6px 12px; cursor:pointer; border-radius:8px; border:1px solid #cbd5e1; background:white; font-weight:bold;">⬅️</button>
+                <button onclick="moveMonth(1)" style="padding:6px 12px; cursor:pointer; border-radius:8px; border:1px solid #cbd5e1; background:white; font-weight:bold;">➡️</button>
+            </div>
+        </div>
+        ${grid}`;
+}
 }
 
 function renderList(container) {
