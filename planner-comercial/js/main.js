@@ -1,74 +1,79 @@
-// --- 1. CONFIGURACIÓN Y DATOS ---
-const USERS = {
-    "editorial": { pass: "metro2026", role: "Editorial", color: "#2563eb" },
-    "content": { pass: "content2026", role: "Content", color: "#10b981" },
-    "trafico": { pass: "trafico2026", role: "Tráfico y Control", color: "#f59e0b" }
-};
-
-let currentUser = null; 
+// --- DATOS INICIALES ---
 let tasks = [
-    { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '' },
-    { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki' },
-    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' }
+    { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00' },
+    { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00' },
+    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00' }
 ];
 
-let currentView = 'lista'; 
-let currentDate = '2026-06-13';
-let currentWeekStart = new Date('2026-06-08T00:00:00'); 
+let currentUser = null;
+let currentView = 'lista';
 let currentMonth = new Date('2026-06-01T00:00:00');
 
-// --- 2. LOGIN Y MODALES ---
-window.openLogin = () => document.getElementById('loginModal').style.display = 'flex';
-window.closeLogin = () => document.getElementById('loginModal').style.display = 'none';
-window.openActionModal = () => document.getElementById('actionModal').style.display = 'flex';
-window.closeActionModal = () => document.getElementById('actionModal').style.display = 'none';
+// --- FUNCIONES DE NAVEGACIÓN ---
+window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth() + n); render(); };
 
-window.attemptLogin = () => {
-    const u = document.getElementById('userInput').value;
-    const p = document.getElementById('passInput').value;
-    if (USERS[u] && USERS[u].pass === p) {
-        currentUser = { name: u, ...USERS[u] };
-        document.getElementById('authStatus').innerHTML = `<span style="color:${currentUser.color}; font-weight:bold;">● ${currentUser.role}</span>`;
-        document.getElementById('roleLoginBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'block';
-        if(currentUser.role === "Editorial") document.getElementById('btnNuevaAccion').style.display = 'inline-block';
-        closeLogin();
-        render();
-    } else { alert("Usuario o clave incorrectos"); }
-};
-
-window.logout = () => {
-    currentUser = null;
-    document.getElementById('authStatus').innerText = "👁️ Modo público";
-    document.getElementById('roleLoginBtn').style.display = 'block';
-    document.getElementById('logoutBtn').style.display = 'none';
-    document.getElementById('btnNuevaAccion').style.display = 'none';
-    render();
-};
-
-// --- 3. GUARDAR ACCIÓN ---
-window.saveNewAction = () => {
-    const title = document.getElementById('newTitle').value;
-    const date = document.getElementById('newDate').value;
-    const time = document.getElementById('newTime').value;
-    const resp = document.getElementById('newResp').value;
-    const status = document.getElementById('newStatus').value;
-    if(!title || !date || !time) return alert("Completa los campos");
-    tasks.push({ id: Date.now(), title, date, time, responsible: resp, project: "Metro Ecuador", bookingStatus: status, client: "" });
-    closeActionModal();
-    render();
-};
-
-// --- 4. MOTOR DE RENDERIZADO ---
+// --- MOTOR DE DIBUJO ---
 function render() {
     const content = document.getElementById('content');
-    if(!content) return;
+    if (!content) return;
+
+    // Actualizar Números Superiores
     document.getElementById('statTotal').innerText = tasks.length;
     document.getElementById('statLibre').innerText = tasks.filter(t => t.bookingStatus === 'libre').length;
     document.getElementById('statReservado').innerText = tasks.filter(t => t.bookingStatus === 'reservado').length;
     document.getElementById('statVendido').innerText = tasks.filter(t => t.bookingStatus === 'vendido').length;
 
-    if (currentView === 'diaria') renderDaily(content);
-    else if (currentView === 'semanal') renderWeekly(content);
-    else if (currentView === 'mensual') renderMonthly(content);
-    else renderList(
+    if (currentView === 'mensual') renderMonthly(content);
+    else renderList(content);
+}
+
+function renderMonthly(container) {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+    let monthOptions = "";
+    [2025, 2026, 2027].forEach(y => {
+        monthNames.forEach((m, i) => {
+            monthOptions += `<option value="${y}-${i}" ${(y===year && i===month) ? 'selected' : ''}>${m} ${y}</option>`;
+        });
+    });
+
+    container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <h2 style="margin:0;">${monthNames[month]} ${year}</h2>
+                <select onchange="let v=this.value.split('-'); currentMonth.setFullYear(v[0]); currentMonth.setMonth(v[1]); render();" style="padding:5px; border-radius:8px;">
+                    ${monthOptions}
+                </select>
+            </div>
+            <div>
+                <button onclick="moveMonth(-1)">⬅️</button>
+                <button onclick="moveMonth(1)">➡️</button>
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; background:#f1f5f9; padding:5px; border-radius:12px; min-height:300px;">
+            ${Array.from({length: 31}, (_, i) => `<div style="background:white; border-radius:8px; padding:10px; min-height:80px;">${i+1}</div>`).join('')}
+        </div>`;
+}
+
+function renderList(container) {
+    let html = '<h2>Cronograma Detallado</h2>';
+    tasks.forEach(t => {
+        html += `<div style="background:white; padding:15px; margin-bottom:10px; border-radius:12px; border-left:5px solid #1e293b;">
+            <strong>${t.date}</strong> - ${t.title} (${t.bookingStatus})
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+// --- EVENTOS ---
+document.querySelectorAll('.view-switch button').forEach(btn => {
+    btn.onclick = (e) => {
+        currentView = e.target.getAttribute('data-view');
+        render();
+    };
+});
+
+// Arrancar
+render();
