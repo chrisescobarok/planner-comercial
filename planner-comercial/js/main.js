@@ -9,8 +9,7 @@ let currentUser = null;
 let tasks = [
     { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '' },
     { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki' },
-    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' },
-    { id: 5, title: 'Análisis Post-Partido', responsible: 'Carlos Bolaños', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-15', time: '10:00', client: '' }
+    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' }
 ];
 
 let currentView = 'lista'; 
@@ -18,9 +17,11 @@ let currentDate = '2026-06-14';
 let currentWeekStart = '2026-06-08'; 
 let currentMonth = new Date('2026-06-01T00:00:00');
 
-// --- 2. SISTEMA DE LOGIN ---
+// --- 2. SISTEMA DE LOGIN Y MODALES ---
 window.openLogin = () => document.getElementById('loginModal').style.display = 'flex';
 window.closeLogin = () => document.getElementById('loginModal').style.display = 'none';
+window.openActionModal = () => document.getElementById('actionModal').style.display = 'flex';
+window.closeActionModal = () => document.getElementById('actionModal').style.display = 'none';
 
 window.attemptLogin = () => {
     const u = document.getElementById('userInput').value;
@@ -30,6 +31,12 @@ window.attemptLogin = () => {
         document.getElementById('authStatus').innerHTML = `<span style="color:${currentUser.color}; font-weight:bold;">● ${currentUser.role}</span>`;
         document.getElementById('roleLoginBtn').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'block';
+        
+        // MOSTRAR BOTÓN NUEVA ACCIÓN SOLO SI ES EDITORIAL
+        if(currentUser.role === "Editorial") {
+            document.getElementById('btnNuevaAccion').style.display = 'inline-block';
+        }
+        
         closeLogin();
         render();
     } else { alert("Usuario o clave incorrectos"); }
@@ -40,15 +47,30 @@ window.logout = () => {
     document.getElementById('authStatus').innerText = "👁️ Modo público";
     document.getElementById('roleLoginBtn').style.display = 'block';
     document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('btnNuevaAccion').style.display = 'none';
     render();
 };
 
-// --- 3. MOTOR DE RENDERIZADO ---
+// --- 3. GUARDAR NUEVA ACCIÓN ---
+window.saveNewAction = () => {
+    const title = document.getElementById('newTitle').value;
+    const date = document.getElementById('newDate').value;
+    const time = document.getElementById('newTime').value;
+    const resp = document.getElementById('newResp').value;
+    const status = document.getElementById('newStatus').value;
+
+    if(!title || !date || !time) return alert("Completa Título, Fecha y Hora");
+
+    tasks.push({ id: Date.now(), title, date, time, responsible: resp, project: "Metro Ecuador", bookingStatus: status, client: "" });
+    closeActionModal();
+    render();
+    document.getElementById('newTitle').value = ""; // Limpiar
+};
+
+// --- 4. MOTOR DE RENDERIZADO (BLOQUEADO / NO TOCAR) ---
 function render() {
     const content = document.getElementById('content');
     if(!content) return;
-    
-    // Contadores
     document.getElementById('statTotal').innerText = tasks.length;
     document.getElementById('statLibre').innerText = tasks.filter(t => t.bookingStatus === 'libre').length;
     document.getElementById('statReservado').innerText = tasks.filter(t => t.bookingStatus === 'reservado').length;
@@ -67,24 +89,12 @@ function taskCard(t) {
         else if (currentUser.role === "Content" && t.bookingStatus === "libre") btn = `<button class="btn-mini">Reservar</button>`;
         else if (currentUser.role === "Tráfico y Control" && t.bookingStatus === "reservado") btn = `<button class="btn-mini">Vender</button>`;
     }
-    return `
-        <div class="task-item is-${t.bookingStatus}">
-            <div style="display:flex; justify-content:space-between; align-items:start;">
-                <div>
-                    <span class="badge ${t.bookingStatus}">${t.bookingStatus}</span>
-                    <div style="font-size:18px; font-weight:bold; margin-top:8px;">${t.title}</div>
-                    <div style="color:gray; font-size:13px; margin-top:5px;">🕒 ${t.time} | 👤 ${t.responsible}</div>
-                    <div style="margin-top:10px;">${btn}</div>
-                </div>
-                ${t.client ? `<div style="text-align:right;"><small>Cliente</small><br><strong>${t.client}</strong></div>` : ''}
-            </div>
-        </div>`;
+    return `<div class="task-item is-${t.bookingStatus}"><div style="display:flex; justify-content:space-between; align-items:start;"><div><span class="badge ${t.bookingStatus}">${t.bookingStatus}</span><div style="font-size:18px; font-weight:bold; margin-top:8px;">${t.title}</div><div style="color:gray; font-size:13px; margin-top:5px;">🕒 ${t.time} | 👤 ${t.responsible}</div><div style="margin-top:10px;">${btn}</div></div>${t.client ? `<div style="text-align:right;"><small>Cliente</small><br><strong>${t.client}</strong></div>` : ''}</div></div>`;
 }
 
-// --- VISTAS ---
 function renderDaily(container) {
     const filtered = tasks.filter(t => t.date === currentDate);
-    container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2>Vista Diaria</h2><div><button onclick="moveDay(-1)">⬅️</button> <button onclick="moveDay(1)">➡️</button></div></div>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>');
+    container.innerHTML = `<h2>Día: ${currentDate}</h2>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>');
 }
 
 function renderWeekly(container) {
@@ -94,12 +104,9 @@ function renderWeekly(container) {
         const d = new Date(start); d.setDate(start.getDate() + i);
         const dStr = d.toISOString().slice(0, 10);
         const dayTasks = tasks.filter(t => t.date === dStr);
-        html += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="background:white; border:1px solid #eee; border-radius:10px; padding:10px; min-height:300px; cursor:pointer;">
-            <div style="font-weight:bold; font-size:11px; margin-bottom:10px;">${dStr}</div>
-            ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block; padding:2px;">${t.time} ${t.title.substring(0,12)}...</div>`).join('')}
-        </div>`;
+        html += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="background:white; border:1px solid #eee; border-radius:10px; padding:10px; min-height:300px; cursor:pointer;"><div style="font-weight:bold; font-size:11px; margin-bottom:10px;">${dStr}</div>${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block;">${t.time} ${t.title.substring(0,12)}...</div>`).join('')}</div>`;
     }
-    container.innerHTML = `<h2>Vista Semanal</h2>` + html + '</div>';
+    container.innerHTML = `<h2>Semana</h2>` + html + '</div>';
 }
 
 function renderMonthly(container) {
@@ -107,19 +114,13 @@ function renderMonthly(container) {
     const lastDay = new Date(year, month + 1, 0).getDate();
     const firstDay = new Date(year, month, 1);
     const offset = (firstDay.getDay() + 6) % 7;
-
     let grid = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; background:#f1f5f9; padding:5px; border-radius:12px;">';
     ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:11px; color:#64748b; padding:5px;">${d}</div>`);
-    
     for(let i=0; i<offset; i++) grid += '<div style="background:#f8fafc; border-radius:8px;"></div>';
-    
     for(let d=1; d<=lastDay; d++) {
         const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const dayTasks = tasks.filter(t => t.date === dStr);
-        grid += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="min-height:100px; background:white; border-radius:8px; padding:8px; cursor:pointer; display:flex; flex-direction:column; gap:4px;">
-            <strong style="font-size:12px;">${d}</strong>
-            ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>`).join('')}
-        </div>`;
+        grid += `<div onclick="currentDate='${dStr}'; currentView='diaria'; render();" style="min-height:100px; background:white; border-radius:8px; padding:8px; cursor:pointer;"><strong>${d}</strong>${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px; white-space:nowrap; overflow:hidden;">${t.title}</div>`).join('')}</div>`;
     }
     container.innerHTML = `<h2>${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2>` + grid + '</div>';
 }
@@ -137,8 +138,10 @@ function renderList(container) {
     container.innerHTML = html;
 }
 
-// --- NAVEGACIÓN ---
-window.moveDay = (n) => { let d = new Date(currentDate+'T00:00:00'); d.setDate(d.getDate()+n); currentDate=d.toISOString().slice(0,10); render(); };
+// --- 5. EVENTOS ---
+document.getElementById('roleLoginBtn').onclick = window.openLogin;
+document.getElementById('logoutBtn').onclick = window.logout;
+document.getElementById('btnNuevaAccion').onclick = window.openActionModal;
 
 document.querySelectorAll('.view-switch button').forEach(btn => {
     btn.onclick = (e) => {
@@ -148,8 +151,5 @@ document.querySelectorAll('.view-switch button').forEach(btn => {
         render();
     };
 });
-
-document.getElementById('roleLoginBtn').onclick = window.openLogin;
-document.getElementById('logoutBtn').onclick = window.logout;
 
 render();
