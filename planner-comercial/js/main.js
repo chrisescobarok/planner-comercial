@@ -1,13 +1,8 @@
-// --- DATOS INICIALES (Simulados hasta conectar base de datos) ---
-const tasks = [
-    { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', category: 'deportes', responsible: 'Christian', project: 'Metro Ecuador', workflowStatus: 'Pendiente', contentType: 'Editorial', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '', reservedBy: '', reservationDate: '', event: 'Ecuador vs Costa de Marfil', notes: 'Espacio web premium del día previo.' },
-    { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', category: 'deportes', responsible: 'Andrea', project: 'Metro Ecuador', workflowStatus: 'Producción', contentType: 'Comercial', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki', reservedBy: 'Andrea', reservationDate: '2026-03-31 10:15', event: 'Ecuador vs Costa de Marfil', notes: 'Incluye branding de apertura.' },
-    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', category: 'deportes', responsible: 'Christian', project: 'Metro Ecuador', workflowStatus: 'Entregado', contentType: 'Comercial', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi', reservedBy: 'Christian', reservationDate: '2026-03-31 12:30', event: 'Ecuador vs Costa de Marfil', notes: 'Pieza final con call to action.' }
-];
-
-const USERS = [
-    { username: 'master.metro', aliases: ['master'], password: 'Mundial2026!', role: 'master' },
-    { username: 'reserva.metro', aliases: ['reserva'], password: 'Mundial2026?', role: 'reserve' }
+// --- DATOS INICIALES ---
+let tasks = [
+    { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', category: 'deportes', responsible: 'Christian', project: 'Metro Ecuador', workflowStatus: 'Pendiente', contentType: 'Editorial', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '', event: 'Ecuador vs Costa de Marfil' },
+    { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', category: 'deportes', responsible: 'Andrea', project: 'Metro Ecuador', workflowStatus: 'Producción', contentType: 'Comercial', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki', event: 'Ecuador vs Costa de Marfil' },
+    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', category: 'deportes', responsible: 'Christian', project: 'Metro Ecuador', workflowStatus: 'Entregado', contentType: 'Comercial', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi', event: 'Ecuador vs Costa de Marfil' }
 ];
 
 const catalogs = {
@@ -22,38 +17,15 @@ let currentView = 'diaria';
 let currentDate = '2026-06-14';
 let currentWeekStart = '2026-06-14';
 let currentMonth = new Date('2026-06-01T00:00:00');
-let currentRole = 'public';
-let currentUser = null;
-let pendingReserveId = null;
-let editingTaskId = null;
 
-// --- ELEMENTOS DEL DOM ---
-const content = document.getElementById('content');
-const searchInput = document.getElementById('searchInput');
-const categoryFilter = document.getElementById('categoryFilter');
-const statusFilter = document.getElementById('statusFilter');
-
-// --- FUNCIONES DE AYUDA ---
-function isMaster() { return currentRole === 'master'; }
-function canReserve() { return currentRole === 'master' || currentRole === 'reserve'; }
-
-function nowStamp() {
-    const d = new Date();
-    return d.toISOString().slice(0, 10) + ' ' + d.toTimeString().slice(0, 5);
-}
-
-function formatLongDate(dateStr) {
-    const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-// --- RENDERIZADO ---
+// --- RENDERIZADO PRINCIPAL ---
 function render() {
     updateStats();
-    if (currentView === 'diaria') renderDaily();
-    if (currentView === 'semanal') renderWeekly();
-    if (currentView === 'mensual') renderMonthly();
-    if (currentView === 'lista') renderList();
+    const content = document.getElementById('content');
+    if (currentView === 'diaria') renderDaily(content);
+    if (currentView === 'semanal') renderWeekly(content);
+    if (currentView === 'mensual') renderMonthly(content);
+    if (currentView === 'lista') renderList(content);
 }
 
 function updateStats() {
@@ -65,115 +37,115 @@ function updateStats() {
 }
 
 function getFilteredTasks() {
-    const search = searchInput.value.toLowerCase();
-    const cat = categoryFilter.value;
-    const stat = statusFilter.value;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    return tasks.filter(t => t.title.toLowerCase().includes(search) || (t.client && t.client.toLowerCase().includes(search)));
+}
 
-    return tasks.filter(t => {
-        const matchSearch = t.title.toLowerCase().includes(search) || (t.client && t.client.toLowerCase().includes(search));
-        const matchCat = cat === 'todas' || t.category === cat;
-        const matchStat = stat === 'todas' || t.bookingStatus === stat;
-        return matchSearch && matchCat && matchStat;
-    }).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+// --- VISTA DIARIA ---
+function renderDaily(container) {
+    const filtered = getFilteredTasks().filter(t => t.date === currentDate);
+    container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
+            <h3>Día: ${currentDate}</h3>
+            <div>
+                <button onclick="moveDay(-1)">⬅️</button>
+                <button onclick="moveDay(1)">➡️</button>
+            </div>
+        </div>
+        ${filtered.map(t => taskCard(t)).join('') || '<p class="muted">No hay acciones.</p>'}
+    `;
+}
+
+// --- VISTA SEMANAL ---
+function renderWeekly(container) {
+    const start = new Date(currentWeekStart + 'T00:00:00');
+    const weekDates = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        return d.toISOString().slice(0, 10);
+    });
+
+    container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h3>Semana del ${currentWeekStart}</h3>
+            <div>
+                <button onclick="moveWeek(-7)">Semana Anterior</button>
+                <button onclick="moveWeek(7)">Semana Siguiente</button>
+            </div>
+        </div>
+        <div class="week-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:10px;">
+            ${weekDates.map(date => `
+                <div class="card" style="padding:10px; min-height:200px;">
+                    <strong style="font-size:12px;">${date}</strong>
+                    <hr>
+                    ${getFilteredTasks().filter(t => t.date === date).map(t => `
+                        <div style="font-size:11px; margin-bottom:5px; padding:5px; background:#f0f4f8; border-radius:5px;">
+                            ${t.time} - ${t.title}
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// --- VISTA MENSUAL ---
+function renderMonthly(container) {
+    const monthLabel = currentMonth.toLocaleDateString('es-EC', { month: 'long', year: 'numeric' });
+    container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h3 style="text-transform: capitalize;">${monthLabel}</h3>
+            <div>
+                <button onclick="moveMonth(-1)">Mes Anterior</button>
+                <button onclick="moveMonth(1)">Mes Siguiente</button>
+            </div>
+        </div>
+        <div style="text-align:center; padding:40px; color:gray;">Cargando calendario interactivo...</div>
+    `;
 }
 
 function taskCard(task) {
     return `
         <div class="task-item">
-            <div style="display:flex; justify-content:space-between;">
-                <div>
-                    <h3 style="margin:0;">${task.title}</h3>
-                    <div style="font-size:12px; color:gray;">${task.time} | ${task.category} | ${task.project}</div>
-                    <div style="margin-top:5px;">
-                        <span class="badge ${task.bookingStatus}">${task.bookingStatus.toUpperCase()}</span>
-                        <span class="workflow-badge ${task.workflowStatus.toLowerCase()}">${task.workflowStatus}</span>
-                    </div>
-                    ${task.client ? `<div style="font-weight:bold; margin-top:5px;">Cliente: ${task.client}</div>` : ''}
-                </div>
-                <div>
-                    ${canReserve() && task.bookingStatus === 'libre' ? `<button onclick="openReserveModal(${task.id})">Reservar</button>` : ''}
-                    ${isMaster() ? `<button onclick="openEditModal(${task.id})">Editar</button>` : ''}
-                </div>
+            <strong>${task.time} - ${task.title}</strong><br>
+            <small>${task.project} | ${task.category}</small>
+            <div style="margin-top:5px;">
+                <span class="badge ${task.bookingStatus}">${task.bookingStatus}</span>
             </div>
         </div>
     `;
 }
 
-function renderDaily() {
-    const filtered = getFilteredTasks().filter(t => t.date === currentDate);
-    content.innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-            <h2>${formatLongDate(currentDate)}</h2>
-            <div>
-                <button onclick="moveDay(-1)">Anterior</button>
-                <button onclick="moveDay(1)">Siguiente</button>
-            </div>
-        </div>
-        ${filtered.map(taskCard).join('') || '<p>No hay acciones para hoy.</p>'}
-    `;
-}
-
-// Funciones de navegación
-window.moveDay = (delta) => {
+// --- NAVEGACIÓN ---
+window.moveDay = (n) => {
     let d = new Date(currentDate + 'T00:00:00');
-    d.setDate(d.getDate() + delta);
+    d.setDate(d.getDate() + n);
     currentDate = d.toISOString().slice(0, 10);
     render();
 };
 
-// --- LOGIN LÓGICA ---
-function attemptLogin() {
-    const user = document.getElementById('loginUser').value;
-    const pass = document.getElementById('loginPass').value;
-    const found = USERS.find(u => u.username === user && u.password === pass);
-
-    if (found) {
-        currentRole = found.role;
-        currentUser = found;
-        document.getElementById('loginBackdrop').classList.remove('open');
-        updateRoleUI();
-        render();
-    } else {
-        alert('Credenciales incorrectas');
-    }
-}
-
-function updateRoleUI() {
-    const auth = document.getElementById('authStatus');
-    const loginBtn = document.getElementById('roleLoginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    if (currentRole === 'public') {
-        auth.textContent = '👁️ Modo público';
-        loginBtn.style.display = 'block';
-        logoutBtn.style.display = 'none';
-    } else {
-        auth.textContent = currentRole === 'master' ? '🟢 Master activo' : '🟡 Reserva activo';
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'block';
-    }
-}
-
-// --- EVENT LISTENERS ---
-document.getElementById('loginSubmitBtn')?.addEventListener('click', attemptLogin);
-document.getElementById('roleLoginBtn')?.addEventListener('click', () => document.getElementById('loginBackdrop').classList.add('open'));
-document.getElementById('closeLoginBtn')?.addEventListener('click', () => document.getElementById('loginBackdrop').classList.remove('open'));
-document.getElementById('logoutBtn')?.addEventListener('click', () => { currentRole = 'public'; updateRoleUI(); render(); });
-searchInput.addEventListener('input', render);
-
-// --- INICIO ---
-function init() {
-    // Llenar select de categorías
-    const catSelect = document.getElementById('categoryFilter');
-    catSelect.innerHTML = '<option value="todas">Todas las categorías</option>' + 
-        catalogs.categories.map(c => `<option value="${c}">${c}</option>`).join('');
-    
-    updateRoleUI();
+window.moveWeek = (n) => {
+    let d = new Date(currentWeekStart + 'T00:00:00');
+    d.setDate(d.getDate() + n);
+    currentWeekStart = d.toISOString().slice(0, 10);
     render();
-}
+};
 
-init();
+window.moveMonth = (n) => {
+    currentMonth.setMonth(currentMonth.getMonth() + n);
+    render();
+};
 
-// Exponer funciones necesarias globalmente para los onclick del HTML
-window.openReserveModal = (id) => { /* lógica modal reserva */ alert('Lógica de reserva para ID: ' + id); };
-window.openEditModal = (id) => { /* lógica modal edición */ alert('Lógica de edición para ID: ' + id); };
+// --- INICIALIZACIÓN ---
+document.querySelectorAll('.view-switch button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.view-switch button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentView = e.target.dataset.view;
+        render();
+    });
+});
+
+document.getElementById('searchInput').addEventListener('input', render);
+
+render();
