@@ -20,6 +20,7 @@
                 <span id="authStatus">👁️ Modo público</span>
                 <button id="roleLoginBtn">Ingresar</button>
                 <button id="logoutBtn" style="display:none;">Cerrar sesión</button>
+                <button id="btnNuevaAccion" style="background:#f97316; color:white; font-weight:bold; border:none; padding:8px 15px; border-radius:10px; cursor:pointer; margin-left:10px; display:none;">+ Nueva acción</button>
             </div>
         </div>
 
@@ -59,6 +60,45 @@
         </div>
         
         <button onclick="attemptLogin()" style="width:100%; margin-top:25px; padding:12px; background:#111827; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Entrar</button>
+    </div>
+</div>
+    <div id="actionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1001; align-items:center; justify-content:center; overflow-y:auto; padding:20px;">
+    <div class="card" style="width:100%; max-width:500px; padding:25px; position:relative; background:white; border-radius:15px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+        <button onclick="closeActionModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; cursor:pointer; font-size:24px;">&times;</button>
+        <h2 style="margin-top:0; font-size: 20px;">Nueva Acción Planificada</h2>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:20px;">
+            <div style="grid-column: span 2;">
+                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Título de la Acción</label>
+                <input type="text" id="newTitle" placeholder="Ej: Previa Ecuador vs Senegal" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Fecha</label>
+                <input type="date" id="newDate" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Hora</label>
+                <input type="time" id="newTime" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Responsable</label>
+                <select id="newResp" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
+                    <option value="Christian">Christian</option>
+                    <option value="Andrea">Andrea</option>
+                    <option value="Gaby Vaca">Gaby Vaca</option>
+                    <option value="Carlos Bolaños">Carlos Bolaños</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Estado Inicial</label>
+                <select id="newStatus" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
+                    <option value="libre">Libre (Editorial)</option>
+                    <option value="reservado">Reservado (Comercial)</option>
+                </select>
+            </div>
+        </div>
+        
+        <button onclick="saveNewAction()" style="width:100%; margin-top:25px; padding:12px; background:#111827; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; transition: 0.2s;">Guardar en Cronograma</button>
     </div>
 </div>
 </html>
