@@ -118,7 +118,7 @@ function renderWeekly(container) {
             </div>
         </div>${html}</div>`;
 }
-
+}
 function renderMonthly(container) {
     const year = currentMonth.getFullYear(); 
     const month = currentMonth.getMonth();
