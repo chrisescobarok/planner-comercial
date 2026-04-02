@@ -5,40 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planner Comercial - Metro Ecuador</title>
     <style>
-        /* --- ROPA DEL PROYECTO (CSS) --- */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; color: #1e293b; margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        /* --- DISEÑO PREMIUM METRO --- */
+        body { font-family: 'Inter', -apple-system, sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .logo-area { display: flex; align-items: center; gap: 15px; }
         .logo-circle { width: 50px; height: 50px; background: #1e293b; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
         
         .auth-controls { display: flex; align-items: center; gap: 10px; }
-        .btn-sec { padding: 8px 15px; border-radius: 8px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: 500; }
-        .btn-orange { background: #f97316; color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: bold; cursor: pointer; height: 38px; }
+        button { padding: 10px 16px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        button:hover { background: #f1f5f9; }
+        .btn-orange { background: #f97316 !important; color: white !important; border: none !important; font-weight: bold; height: 40px; }
+        .btn-dark { background: #1e293b !important; color: white !important; border: none !important; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; text-align: center; }
         .stat-card h3 { font-size: 13px; color: #64748b; margin: 0; text-transform: uppercase; }
-        .stat-card p { font-size: 28px; font-weight: bold; margin: 10px 0 0 0; }
+        .stat-card p { font-size: 32px; font-weight: bold; margin: 10px 0 0 0; }
 
         .view-switch { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; }
-        .view-btn { padding: 10px 15px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; cursor: pointer; }
-        .view-btn.active { background: #1e293b; color: white; }
+        .view-btn.active { background: #1e293b; color: white; border-color: #1e293b; }
 
-        /* Estilo de las franjas de colores */
-        .task-item { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.03); display: flex; justify-content: space-between; }
-        .is-libre { border-left-color: #10b981; }
-        .is-reservado { border-left-color: #f59e0b; }
-        .is-vendido { border-left-color: #ef4444; }
+        /* Estilos de Tarjetas */
+        .task-item { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: start; }
+        .is-libre { border-left-color: #10b981; background: #f0fdf4; }
+        .is-reservado { border-left-color: #f59e0b; background: #fffbeb; }
+        .is-vendido { border-left-color: #ef4444; background: #fef2f2; }
         
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; display: inline-block; margin-bottom: 8px; }
         .badge.libre { background: #dcfce7; color: #166534; }
         .badge.reservado { background: #fef3c7; color: #92400e; }
         .badge.vendido { background: #fee2e2; color: #991b1b; }
 
+        /* Grillas de Vistas */
+        .week-grid, .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .day-column { background: #f8fafc; border-radius: 12px; padding: 10px; min-height: 400px; border: 1px solid #e2e8f0; }
+        .month-day { background: white; border-radius: 10px; padding: 10px; min-height: 100px; border: 1px solid #e2e8f0; cursor: pointer; }
+        .month-day:hover { border-color: #1e293b; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 400px; }
+        .modal-content { background: white; padding: 30px; border-radius: 20px; width: 450px; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -48,143 +56,9 @@
                 <div class="logo-area">
                     <div class="logo-circle">ME</div>
                     <div>
-                        <h1 style="margin:0; font-size: 22px;">Planner Comercial - Dashboard</h1>
-                        <p style="margin:3px 0 0 0; color: #64748b; font-size: 14px;">Visualización de contenido editorial y comercial</p>
+                        <h1 style="margin:0; font-size: 24px;">Planner Comercial - Dashboard</h1>
+                        <p style="margin:5px 0 0 0; color: #64748b; font-size: 14px;">Visualización de contenido editorial y comercial</p>
                     </div>
                 </div>
                 <div class="auth-controls">
-                    <span id="authStatus" style="font-size: 13px; color: #64748b;">👁️ Modo público</span>
-                    <button id="roleLoginBtn" class="btn-sec" onclick="openLogin()">Ingresar</button>
-                    <button id="logoutBtn" class="btn-sec" style="display:none;" onclick="logout()">Cerrar sesión</button>
-                    <button id="btnNuevaAccion" class="btn-orange" style="display:none;" onclick="openActionModal()">+ Nueva acción</button>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card"><h3>Total acciones</h3><p id="statTotal">0</p></div>
-                <div class="stat-card"><h3>Libres</h3><p id="statLibre">0</p></div>
-                <div class="stat-card"><h3>Reservadas</h3><p id="statReservado">0</p></div>
-                <div class="stat-card"><h3>Vendidas</h3><p id="statVendido">0</p></div>
-            </div>
-
-            <div class="view-switch">
-                <button class="view-btn active" onclick="changeView('lista', this)">Vista lista</button>
-                <button class="view-btn" onclick="changeView('diaria', this)">Vista diaria</button>
-                <button class="view-btn" onclick="changeView('semanal', this)">Vista semanal</button>
-                <button class="view-btn" onclick="changeView('mensual', this)">Vista mensual</button>
-            </div>
-        </header>
-
-        <main id="contentArea">
-            </main>
-    </div>
-
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-top:0;">Acceso Personal Metro</h2>
-            <input type="text" id="userInput" placeholder="Usuario" style="width:100%; padding:10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box;">
-            <input type="password" id="passInput" placeholder="Contraseña" style="width:100%; padding:10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box;">
-            <button onclick="attemptLogin()" style="width:100%; background: #1e293b; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Entrar</button>
-            <button onclick="closeLogin()" style="width:100%; background: none; border: none; color: gray; margin-top: 10px; cursor: pointer;">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="actionModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-top:0;">Nueva Acción</h2>
-            <input type="text" id="newTitle" placeholder="Título de la Acción" style="width:100%; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <input type="date" id="newDate" style="width:50%; padding:10px; border:1px solid #ddd; border-radius:8px;">
-                <input type="time" id="newTime" style="width:50%; padding:10px; border:1px solid #ddd; border-radius:8px;">
-            </div>
-            <select id="newResp" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-                <option value="Christian">Christian</option>
-                <option value="Andrea">Andrea</option>
-                <option value="Gaby Vaca">Gaby Vaca</option>
-                <option value="Carlos Bolaños">Carlos Bolaños</option>
-            </select>
-            <select id="newStatus" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;">
-                <option value="libre">Libre</option>
-                <option value="reservado">Reservado</option>
-                <option value="vendido">Vendido</option>
-            </select>
-            <button onclick="saveAction()" style="width:100%; background:#f97316; color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Guardar Acción</button>
-            <button onclick="closeActionModal()" style="width:100%; background:none; border:none; color:gray; margin-top:10px; cursor:pointer;">Cerrar</button>
-        </div>
-    </div>
-
-    <script>
-        /* --- CEREBRO DEL PROYECTO (JS) --- */
-        const USERS = { "editorial": { pass: "metro2026", role: "Editorial" } };
-        let currentUser = null;
-        let currentView = 'lista';
-        let tasks = [
-            { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', bookingStatus: 'libre', date: '2026-06-13', time: '09:00' },
-            { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki' },
-            { id: 3, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' }
-        ];
-
-        function render() {
-            const content = document.getElementById('contentArea');
-            document.getElementById('statTotal').innerText = tasks.length;
-            document.getElementById('statLibre').innerText = tasks.filter(t => t.bookingStatus === 'libre').length;
-            document.getElementById('statReservado').innerText = tasks.filter(t => t.bookingStatus === 'reservado').length;
-            document.getElementById('statVendido').innerText = tasks.filter(t => t.bookingStatus === 'vendido').length;
-
-            let html = '';
-            tasks.sort((a,b) => a.date.localeCompare(b.date)).forEach(t => {
-                html += `
-                <div class="task-item is-${t.bookingStatus}">
-                    <div>
-                        <span class="badge ${t.bookingStatus}">${t.bookingStatus}</span>
-                        <div style="font-size:18px; font-weight:bold; margin-top:8px;">${t.title}</div>
-                        <div style="color:gray; font-size:13px; margin-top:5px;">📅 ${t.date} | 🕒 ${t.time} | 👤 ${t.responsible}</div>
-                    </div>
-                    ${t.client ? `<div style="text-align:right;"><small>Cliente</small><br><strong>${t.client}</strong></div>` : ''}
-                </div>`;
-            });
-            content.innerHTML = html || '<p>No hay acciones planificadas.</p>';
-        }
-
-        window.openLogin = () => document.getElementById('loginModal').style.display = 'flex';
-        window.closeLogin = () => document.getElementById('loginModal').style.display = 'none';
-        window.openActionModal = () => document.getElementById('actionModal').style.display = 'flex';
-        window.closeActionModal = () => document.getElementById('actionModal').style.display = 'none';
-
-        window.attemptLogin = () => {
-            const u = document.getElementById('userInput').value;
-            const p = document.getElementById('passInput').value;
-            if (USERS[u] && USERS[u].pass === p) {
-                currentUser = USERS[u];
-                document.getElementById('authStatus').innerText = "● Editorial";
-                document.getElementById('roleLoginBtn').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'block';
-                document.getElementById('btnNuevaAccion').style.display = 'block';
-                closeLogin();
-            } else { alert("Error de acceso"); }
-        };
-
-        window.logout = () => { location.reload(); };
-
-        window.saveAction = () => {
-            const title = document.getElementById('newTitle').value;
-            const date = document.getElementById('newDate').value;
-            const time = document.getElementById('newTime').value;
-            const resp = document.getElementById('newResp').value;
-            const status = document.getElementById('newStatus').value;
-            if(!title || !date || !time) return alert("Completa todos los campos");
-            tasks.push({ id: Date.now(), title, date, time, responsible: resp, bookingStatus: status });
-            closeActionModal();
-            render();
-        };
-
-        window.changeView = (view, btn) => {
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            render();
-        };
-
-        render();
-    </script>
-</body>
-</html>
+                    <span id="
