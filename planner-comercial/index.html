@@ -1,103 +1,85 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planner Comercial - Metro Ecuador</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .auth-controls { display: flex; align-items: center; gap: 10px; }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="topbar">
-            <div class="brand">
-                <div class="brand-logo">ME</div>
-                <div>
-                    <h1>Planner Comercial - Dashboard</h1>
-                    <p class="subtitle">Visualización de contenido editorial y comercial</p>
+        <header>
+            <div class="header-top">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div class="logo-circle">ME</div>
+                    <div>
+                        <h1>Planner Comercial - Dashboard</h1>
+                        <p>Visualización de contenido editorial y comercial</p>
+                    </div>
+                </div>
+                <div class="auth-controls">
+                    <span id="authStatus">👁️ Modo público</span>
+                    <button id="roleLoginBtn" class="btn-secondary">Ingresar</button>
+                    <button id="logoutBtn" class="btn-secondary" style="display:none;">Cerrar sesión</button>
+                    <button id="btnNuevaAccion" style="display:none; background:#f97316; color:white; font-weight:bold; border:none; padding:8px 15px; border-radius:10px; cursor:pointer; height:38px; margin:0;">+ Nueva acción</button>
                 </div>
             </div>
-            <div class="actions">
-                <span id="authStatus">👁️ Modo público</span>
-                <button id="roleLoginBtn">Ingresar</button>
-                <button id="logoutBtn" style="display:none;">Cerrar sesión</button>
-<button id="btnNuevaAccion" style="display: none; background: #f97316; color: white; font-weight: bold; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; margin: 0; vertical-align: middle; height: 38px;">+ Nueva acción</button>            </div>
-        </div>
 
-        <div class="stats">
-            <div class="card stat"><small>Total acciones</small><strong id="statTotal">0</strong></div>
-            <div class="card stat"><small>Libres</small><strong id="statLibre">0</strong></div>
-            <div class="card stat"><small>Reservadas</small><strong id="statReservado">0</strong></div>
-            <div class="card stat"><small>Vendidas</small><strong id="statVendido">0</strong></div>
-        </div>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total acciones</h3><p id="statTotal">0</p></div>
+                <div class="stat-card"><h3>Libres</h3><p id="statLibre">0</p></div>
+                <div class="stat-card"><h3>Reservadas</h3><p id="statReservado">0</p></div>
+                <div class="stat-card"><h3>Vendidas</h3><p id="statVendido">0</p></div>
+            </div>
 
-        <div class="view-switch">
-            <button class="active" data-view="diaria">Vista diaria</button>
-            <button data-view="semanal">Vista semanal</button>
-            <button data-view="mensual">Vista mensual</button>
-            <button data-view="lista">Vista lista</button>
-        </div>
+            <div class="view-switch">
+                <button data-view="diaria">Vista diaria</button>
+                <button data-view="semanal">Vista semanal</button>
+                <button data-view="mensual">Vista mensual</button>
+                <button data-view="lista" class="active">Vista lista</button>
+            </div>
+        </header>
 
-        <div class="card panel" id="content"></div>
+        <main id="content">
+            </main>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Acceso Personal Metro</h2>
+            <input type="text" id="userInput" placeholder="Usuario">
+            <input type="password" id="passInput" placeholder="Contraseña">
+            <button onclick="attemptLogin()" class="btn-primary" style="width:100%; margin-top:10px;">Entrar</button>
+            <button onclick="closeLogin()" class="btn-mini" style="margin-top:10px;">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <h2>Nueva Acción Planificada</h2>
+            <input type="text" id="newTitle" placeholder="Título de la Acción">
+            <input type="date" id="newDate">
+            <input type="time" id="newTime">
+            <select id="newResp">
+                <option value="Christian">Christian</option>
+                <option value="Andrea">Andrea</option>
+                <option value="Gaby Vaca">Gaby Vaca</option>
+                <option value="Carlos Bolaños">Carlos Bolaños</option>
+            </select>
+            <select id="newStatus">
+                <option value="libre">Libre</option>
+                <option value="reservado">Reservado</option>
+                <option value="vendido">Vendido</option>
+            </select>
+            <button onclick="saveNewAction()" class="btn-primary" style="width:100%; margin-top:15px;">Guardar</button>
+            <button onclick="closeActionModal()" class="btn-mini" style="margin-top:10px;">Cerrar</button>
+        </div>
     </div>
 
     <script src="js/main.js"></script>
 </body>
-    <div id="loginModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
-    <div class="card" style="width:100%; max-width:400px; padding:30px; position:relative;">
-        <button onclick="closeLogin()" style="position:absolute; top:10px; right:10px; border:none; background:none; cursor:pointer; font-size:20px;">&times;</button>
-        <h2 style="margin-top:0; text-align:center;">Ingreso al Sistema</h2>
-        <p style="text-align:center; color:gray; font-size:14px;">Introduce tus credenciales de Metro Ecuador</p>
-        
-        <div style="margin-top:20px;">
-            <label style="display:block; margin-bottom:5px; font-weight:bold;">Usuario</label>
-            <input type="text" id="userInput" placeholder="Ej: editorial_metro" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
-        </div>
-        
-        <div style="margin-top:15px;">
-            <label style="display:block; margin-bottom:5px; font-weight:bold;">Contraseña</label>
-            <input type="password" id="passInput" placeholder="••••••••" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
-        </div>
-        
-        <button onclick="attemptLogin()" style="width:100%; margin-top:25px; padding:12px; background:#111827; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Entrar</button>
-    </div>
-</div>
-    <div id="actionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1001; align-items:center; justify-content:center; overflow-y:auto; padding:20px;">
-    <div class="card" style="width:100%; max-width:500px; padding:25px; position:relative; background:white; border-radius:15px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-        <button onclick="closeActionModal()" style="position:absolute; top:15px; right:15px; border:none; background:none; cursor:pointer; font-size:24px;">&times;</button>
-        <h2 style="margin-top:0; font-size: 20px;">Nueva Acción Planificada</h2>
-        
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:20px;">
-            <div style="grid-column: span 2;">
-                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Título de la Acción</label>
-                <input type="text" id="newTitle" placeholder="Ej: Previa Ecuador vs Senegal" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
-            </div>
-            <div>
-                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Fecha</label>
-                <input type="date" id="newDate" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
-            </div>
-            <div>
-                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Hora</label>
-                <input type="time" id="newTime" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box;">
-            </div>
-            <div>
-                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Responsable</label>
-                <select id="newResp" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
-                    <option value="Christian">Christian</option>
-                    <option value="Andrea">Andrea</option>
-                    <option value="Gaby Vaca">Gaby Vaca</option>
-                    <option value="Carlos Bolaños">Carlos Bolaños</option>
-                </select>
-            </div>
-            <div>
-                <label style="display:block; font-size:12px; font-weight:bold; margin-bottom:5px; color: #374151;">Estado Inicial</label>
-                <select id="newStatus" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd;">
-                    <option value="libre">Libre (Editorial)</option>
-                    <option value="reservado">Reservado (Comercial)</option>
-                </select>
-            </div>
-        </div>
-        
-        <button onclick="saveNewAction()" style="width:100%; margin-top:25px; padding:12px; background:#111827; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; transition: 0.2s;">Guardar en Cronograma</button>
-    </div>
-</div>
 </html>
