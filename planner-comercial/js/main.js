@@ -2,7 +2,8 @@
 let tasks = [
     { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '' },
     { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki' },
-    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' }
+    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' },
+    { id: 5, title: 'Análisis Post-Partido', responsible: 'Carlos Bolaños', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-15', time: '10:00', client: '' }
 ];
 
 let currentView = 'diaria';
@@ -10,7 +11,6 @@ let currentDate = '2026-06-14';
 let currentWeekStart = '2026-06-08'; 
 let currentMonth = new Date('2026-06-01T00:00:00');
 
-// --- MOTOR DE RENDERIZADO ---
 function render() {
     const content = document.getElementById('content');
     updateStats();
@@ -42,19 +42,49 @@ function taskCard(t) {
     `;
 }
 
-// --- VISTAS ---
+// --- VISTA LISTA AGRUPADA POR DÍAS (LA MEJORA) ---
+function renderList(container) {
+    // Ordenamos las tareas por fecha y luego por hora
+    const sortedTasks = [...tasks].sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        return a.time.localeCompare(b.time);
+    });
+
+    let html = '<h2>Cronograma Completo</h2>';
+    let lastDate = null;
+
+    sortedTasks.forEach(t => {
+        // Si la fecha cambia, insertamos una franja divisoria
+        if (t.date !== lastDate) {
+            const dateObj = new Date(t.date + 'T00:00:00');
+            const dateLabel = dateObj.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' });
+            
+            html += `
+                <div style="background: #f1f5f9; padding: 10px 20px; margin: 30px 0 15px 0; border-radius: 10px; border-left: 5px solid #64748b;">
+                    <span style="text-transform: capitalize; font-weight: bold; color: #475569;">📅 ${dateLabel}</span>
+                </div>
+            `;
+            lastDate = t.date;
+        }
+        html += taskCard(t);
+    });
+
+    container.innerHTML = html || '<p>No hay acciones registradas.</p>';
+}
+
+// --- RESTO DE VISTAS ---
 function renderDaily(container) {
     const filtered = tasks.filter(t => t.date === currentDate);
     container.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2>Vista Diaria</h2>
             <div style="display:flex; gap:10px; align-items:center;">
-                <button onclick="moveDay(-1)">Anterior</button>
+                <button onclick="moveDay(-1)">⬅️</button>
                 <input type="date" value="${currentDate}" onchange="currentDate=this.value; render();" style="padding:8px; border-radius:8px; border:1px solid #ddd;">
-                <button onclick="moveDay(1)">Siguiente</button>
+                <button onclick="moveDay(1)">➡️</button>
             </div>
         </div>
-        ${filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones para esta fecha.</p>'}
+        ${filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>'}
     `;
 }
 
@@ -69,11 +99,11 @@ function renderWeekly(container) {
         html += `
             <div style="background:white; border:1px solid #eee; border-radius:12px; padding:10px; min-height:250px;">
                 <div style="font-weight:bold; font-size:12px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:10px;">${dStr}</div>
-                ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block;">${t.time} ${t.title.substring(0,15)}...</div>`).join('')}
+                ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block; overflow:hidden;">${t.time} ${t.title}</div>`).join('')}
             </div>`;
     }
     html += '</div>';
-    container.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Semana Anterior</button> <button onclick="moveWeek(7)">Semana Siguiente</button></div></div>${html}`;
+    container.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Anterior</button> <button onclick="moveWeek(7)">Siguiente</button></div></div>${html}`;
 }
 
 function renderMonthly(container) {
@@ -98,17 +128,12 @@ function renderMonthly(container) {
     container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 style="text-transform:capitalize;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2><div><button onclick="moveMonth(-1)">Anterior</button> <button onclick="moveMonth(1)">Siguiente</button></div></div>${grid}`;
 }
 
-function renderList(container) {
-    container.innerHTML = `<h2>Lista de Acciones</h2>` + tasks.sort((a,b)=>a.date.localeCompare(b.date)).map(t => taskCard(t)).join('');
-}
-
 // --- NAVEGACIÓN ---
 window.moveDay = (n) => { let d = new Date(currentDate+'T00:00:00'); d.setDate(d.getDate()+n); currentDate=d.toISOString().slice(0,10); render(); };
 window.moveWeek = (n) => { let d = new Date(currentWeekStart+'T00:00:00'); d.setDate(d.getDate()+n); currentWeekStart=d.toISOString().slice(0,10); render(); };
 window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth()+n); render(); };
 
-// --- LOGIN Y VISTAS ---
-document.getElementById('roleLoginBtn').addEventListener('click', () => alert('El sistema de login se activará cuando conectemos Supabase. Por ahora usa el Modo Público.'));
+document.getElementById('roleLoginBtn').onclick = () => alert('Acceso restringido');
 
 document.querySelectorAll('.view-switch button').forEach(btn => {
     btn.addEventListener('click', (e) => {
