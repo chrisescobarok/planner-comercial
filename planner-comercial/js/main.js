@@ -1,9 +1,17 @@
-// --- DATOS DE PRUEBA (MUNDIAL JUNIO 2026) ---
+// --- CONFIGURACIÓN DE ROLES Y USUARIOS ---
+const USERS = {
+    "editorial": { pass: "metro2026", role: "Editorial", color: "#2563eb" },
+    "content": { pass: "content2026", role: "Content", color: "#10b981" },
+    "trafico": { pass: "trafico2026", role: "Tráfico y Control", color: "#f59e0b" }
+};
+
+let currentUser = null; // Guardará el usuario activo
+
+// --- DATOS DE PRUEBA ---
 let tasks = [
-    { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '' },
-    { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki' },
-    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi' },
-    { id: 5, title: 'Análisis Post-Partido', responsible: 'Carlos Bolaños', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-15', time: '10:00', client: '' }
+    { id: 1, title: 'Nota previa Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-13', time: '09:00', client: '', type: 'editorial' },
+    { id: 2, title: 'Reel previa Ecuador vs Costa de Marfil', responsible: 'Andrea', project: 'Metro Ecuador', bookingStatus: 'reservado', date: '2026-06-13', time: '16:00', client: 'Suzuki', type: 'comercial' },
+    { id: 4, title: 'Resultado final Ecuador vs Costa de Marfil', responsible: 'Christian', project: 'Metro Ecuador', bookingStatus: 'vendido', date: '2026-06-14', time: '18:00', client: 'Supermaxi', type: 'comercial' }
 ];
 
 let currentView = 'lista'; 
@@ -11,9 +19,37 @@ let currentDate = '2026-06-14';
 let currentWeekStart = '2026-06-08'; 
 let currentMonth = new Date('2026-06-01T00:00:00');
 
+// --- SISTEMA DE LOGIN ---
+window.openLogin = () => document.getElementById('loginModal').style.display = 'flex';
+window.closeLogin = () => document.getElementById('loginModal').style.display = 'none';
+
+window.attemptLogin = () => {
+    const user = document.getElementById('userInput').value;
+    const pass = document.getElementById('passInput').value;
+    
+    if (USERS[user] && USERS[user].pass === pass) {
+        currentUser = { name: user, ...USERS[user] };
+        document.getElementById('authStatus').innerHTML = `<span style="color:${currentUser.color}">● ${currentUser.role}</span>`;
+        document.getElementById('roleLoginBtn').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'block';
+        closeLogin();
+        render(); // Refrescamos para mostrar botones según rol
+    } else {
+        alert("Credenciales incorrectas. Intenta con: editorial / metro2026");
+    }
+};
+
+window.logout = () => {
+    currentUser = null;
+    document.getElementById('authStatus').innerText = "👁️ Modo público";
+    document.getElementById('roleLoginBtn').style.display = 'block';
+    document.getElementById('logoutBtn').style.display = 'none';
+    render();
+};
+
+// --- RENDERIZADO ---
 function render() {
     const content = document.getElementById('content');
-    if (!content) return;
     updateStats();
     if (currentView === 'diaria') renderDaily(content);
     else if (currentView === 'semanal') renderWeekly(content);
@@ -29,13 +65,22 @@ function updateStats() {
 }
 
 function taskCard(t) {
+    // Lógica de botones según Rol
+    let buttons = "";
+    if (currentUser) {
+        if (currentUser.role === "Editorial") buttons = `<button class="btn-mini">Editar</button>`;
+        if (currentUser.role === "Content" && t.bookingStatus === "libre") buttons = `<button class="btn-mini">Reservar</button>`;
+        if (currentUser.role === "Tráfico y Control" && t.bookingStatus === "reservado") buttons = `<button class="btn-mini">Confirmar Venta</button>`;
+    }
+
     return `
         <div class="task-item is-${t.bookingStatus}">
             <div style="display:flex; justify-content:space-between; align-items:start;">
                 <div>
-                    <span class="badge ${t.bookingStatus}">${t.bookingStatus}</span>
+                    <span class="badge ${t.bookingStatus}">${t.bookingStatus.toUpperCase()}</span>
                     <div style="font-size:18px; font-weight:bold; margin-top:8px;">${t.title}</div>
                     <div style="color:var(--muted); font-size:13px; margin-top:5px;">🕒 ${t.time} | 👤 ${t.responsible}</div>
+                    <div style="margin-top:10px;">${buttons}</div>
                 </div>
                 ${t.client ? `<div style="text-align:right;"><small>Cliente</small><br><strong>${t.client}</strong></div>` : ''}
             </div>
@@ -43,110 +88,11 @@ function taskCard(t) {
     `;
 }
 
-// --- VISTA DIARIA ---
-function renderDaily(container) {
-    const filtered = tasks.filter(t => t.date === currentDate);
-    container.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2>Vista Diaria</h2>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <button onclick="moveDay(-1)">Anterior</button>
-                <input type="date" value="${currentDate}" onchange="currentDate=this.value; render();" style="padding:8px; border-radius:8px; border:1px solid #ddd;">
-                <button onclick="moveDay(1)">Siguiente</button>
-            </div>
-        </div>
-        ${filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones para esta fecha.</p>'}
-    `;
-}
+// (Aquí van las funciones renderDaily, renderWeekly, renderMonthly y renderList que ya tienes)
+// Asegúrate de copiar las que ya te funcionan de tu archivo actual para no perder las franjas y el diseño.
 
-// --- VISTA SEMANAL ---
-function renderWeekly(container) {
-    const start = new Date(currentWeekStart + 'T00:00:00');
-    let html = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:12px;">';
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(start);
-        d.setDate(start.getDate() + i);
-        const dStr = d.toISOString().slice(0, 10);
-        const dayTasks = tasks.filter(t => t.date === dStr);
-        html += `
-            <div style="background:white; border:1px solid #eee; border-radius:12px; padding:10px; min-height:280px; cursor:pointer;" onclick="currentDate='${dStr}'; currentView='diaria'; render();">
-                <div style="font-weight:bold; font-size:11px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:10px; color:#1e293b;">${dStr}</div>
-                ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.time} ${t.title}</div>`).join('')}
-            </div>`;
-    }
-    html += '</div>';
-    container.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Anterior</button> <button onclick="moveWeek(7)">Siguiente</button></div></div>${html}`;
-}
-
-// --- VISTA MENSUAL (MEJORADA ESTILO SEMANAL) ---
-function renderMonthly(container) {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    const offset = (firstDay.getDay() + 6) % 7; 
-
-    let grid = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px;">';
-    ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:12px; color:gray; padding:5px;">${d}</div>`);
-    
-    for(let i=0; i<offset; i++) grid += '<div style="aspect-ratio:1/1.2; background:#f8fafc; border-radius:8px; opacity:0.3;"></div>';
-    
-    for(let d=1; d<=lastDay; d++) {
-        const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const dayTasks = tasks.filter(t => t.date === dStr);
-        
-        grid += `
-            <div onclick="currentDate='${dStr}'; currentView='diaria'; render();" 
-                 style="aspect-ratio:1/1.2; background:white; border:1px solid #eee; border-radius:8px; padding:8px; cursor:pointer; overflow:hidden; display:flex; flex-direction:column; gap:4px;">
-                <strong style="font-size:12px;">${d}</strong>
-                ${dayTasks.slice(0, 2).map(t => `
-                    <div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        ${t.time} ${t.title}
-                    </div>
-                `).join('')}
-                ${dayTasks.length > 2 ? `<div style="font-size:9px; color:gray; text-align:center;">+${dayTasks.length - 2} más</div>` : ''}
-            </div>`;
-    }
-    grid += '</div>';
-    
-    container.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="text-transform:capitalize;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2>
-            <div><button onclick="moveMonth(-1)">Anterior</button> <button onclick="moveMonth(1)">Siguiente</button></div>
-        </div>
-        ${grid}`;
-}
-
-// --- VISTA LISTA ---
-function renderList(container) {
-    const sortedTasks = [...tasks].sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
-    let html = '<h2>Cronograma de Acciones</h2>';
-    let lastDate = null;
-    sortedTasks.forEach(t => {
-        if (t.date !== lastDate) {
-            const dateObj = new Date(t.date + 'T00:00:00');
-            html += `<div style="background: #e2e8f0; padding: 12px 20px; margin: 30px 0 15px 0; border-radius: 12px; display: flex; align-items: center; gap: 10px; border-left: 6px solid #1e293b;">
-                        <span style="text-transform: capitalize; font-weight: 800; color: #1e293b; font-size: 16px;">📅 ${dateObj.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
-                     </div>`;
-            lastDate = t.date;
-        }
-        html += taskCard(t);
-    });
-    container.innerHTML = html || '<p>No hay acciones registradas.</p>';
-}
-
-// --- NAVEGACIÓN ---
-window.moveDay = (n) => { let d = new Date(currentDate+'T00:00:00'); d.setDate(d.getDate()+n); currentDate=d.toISOString().slice(0,10); render(); };
-window.moveWeek = (n) => { let d = new Date(currentWeekStart+'T00:00:00'); d.setDate(d.getDate()+n); currentWeekStart=d.toISOString().slice(0,10); render(); };
-window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth()+n); render(); };
-
-document.querySelectorAll('.view-switch button').forEach(btn => {
-    btn.onclick = (e) => {
-        document.querySelectorAll('.view-switch button').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        currentView = e.target.getAttribute('data-view');
-        render();
-    };
-});
+// IMPORTANTE: Al final del JS, asegúrate de conectar el botón Ingresar:
+document.getElementById('roleLoginBtn').onclick = openLogin;
+document.getElementById('logoutBtn').onclick = logout;
 
 render();
