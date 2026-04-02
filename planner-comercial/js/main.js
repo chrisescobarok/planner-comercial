@@ -72,9 +72,32 @@ function render() {
     document.getElementById('statReservado').innerText = tasks.filter(t => t.bookingStatus === 'reservado').length;
     document.getElementById('statVendido').innerText = tasks.filter(t => t.bookingStatus === 'vendido').length;
 
-    if (currentView === 'diaria') renderDaily(content);
-    else if (currentView === 'semanal') renderWeekly(content);
-    else if (currentView === 'mensual') renderMonthly(content);
+  container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">Día: ${currentDate}</h2>
+            <div style="display:flex; gap:10px;">
+                <button onclick="moveDay(-1)" style="padding:5px 12px; cursor:pointer; border-radius:8px; border:1px solid #ddd; background:white;">⬅️ Anterior</button>
+                <button onclick="moveDay(1)" style="padding:5px 12px; cursor:pointer; border-radius:8px; border:1px solid #ddd; background:white;">Siguiente ➡️</button>
+            </div>
+        </div>` + (filtered.map(t => taskCard(t)).join('') || '<p>Sin acciones.</p>');
+   container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">Vista Semanal</h2>
+            <div style="display:flex; gap:10px;">
+                <button onclick="moveWeek(-7)" style="padding:5px 12px; cursor:pointer; border-radius:8px; border:1px solid #ddd; background:white;">⬅️ Anterior</button>
+                <button onclick="moveWeek(7)" style="padding:5px 12px; cursor:pointer; border-radius:8px; border:1px solid #ddd; background:white;">Siguiente ➡️</button>
+            </div>
+        </div>
+        ${html}</div>`;
+   container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="text-transform:capitalize; margin:0;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2>
+            <div style="display:flex; gap:10px;">
+                <button onclick="moveMonth(-1)" style="padding:5px 12px; cursor:pointer; border-radius:8px; border:1px solid #ddd; background:white;">⬅️ Anterior</button>
+                <button onclick="moveMonth(1)" style="padding:5px 12px; cursor:pointer; border-radius:8px; border:1px solid #ddd; background:white;">Siguiente ➡️</button>
+            </div>
+        </div>
+        ${grid}</div>`;
     else renderList(content);
 }
 
