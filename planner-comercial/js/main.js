@@ -6,19 +6,15 @@ let tasks = [
     { id: 5, title: 'Análisis Post-Partido', responsible: 'Carlos Bolaños', project: 'Metro Ecuador', bookingStatus: 'libre', date: '2026-06-15', time: '10:00', client: '' }
 ];
 
-// --- VARIABLES DE ESTADO INICIAL ---
-let currentView = 'lista'; // Empezamos en lista para que veas contenido de una
+let currentView = 'lista'; 
 let currentDate = '2026-06-14';
 let currentWeekStart = '2026-06-08'; 
 let currentMonth = new Date('2026-06-01T00:00:00');
 
-// --- MOTOR DE RENDERIZADO ---
 function render() {
     const content = document.getElementById('content');
     if (!content) return;
-    
     updateStats();
-    
     if (currentView === 'diaria') renderDaily(content);
     else if (currentView === 'semanal') renderWeekly(content);
     else if (currentView === 'mensual') renderMonthly(content);
@@ -73,16 +69,16 @@ function renderWeekly(container) {
         const dStr = d.toISOString().slice(0, 10);
         const dayTasks = tasks.filter(t => t.date === dStr);
         html += `
-            <div style="background:white; border:1px solid #eee; border-radius:12px; padding:10px; min-height:250px;">
+            <div style="background:white; border:1px solid #eee; border-radius:12px; padding:10px; min-height:280px; cursor:pointer;" onclick="currentDate='${dStr}'; currentView='diaria'; render();">
                 <div style="font-weight:bold; font-size:11px; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:10px; color:#1e293b;">${dStr}</div>
-                ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block;">${t.time} ${t.title.substring(0,12)}...</div>`).join('')}
+                ${dayTasks.map(t => `<div class="badge ${t.bookingStatus}" style="font-size:9px; margin-bottom:4px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.time} ${t.title}</div>`).join('')}
             </div>`;
     }
     html += '</div>';
-    container.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Semana Anterior</button> <button onclick="moveWeek(7)">Semana Siguiente</button></div></div>${html}`;
+    container.innerHTML = `<div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Vista Semanal</h2><div><button onclick="moveWeek(-7)">Anterior</button> <button onclick="moveWeek(7)">Siguiente</button></div></div>${html}`;
 }
 
-// --- VISTA MENSUAL ---
+// --- VISTA MENSUAL (MEJORADA ESTILO SEMANAL) ---
 function renderMonthly(container) {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
@@ -90,39 +86,48 @@ function renderMonthly(container) {
     const lastDay = new Date(year, month + 1, 0).getDate();
     const offset = (firstDay.getDay() + 6) % 7; 
 
-    let grid = '<div class="calendar-grid">';
-    ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(d => grid += `<div class="day-name">${d}</div>`);
-    for(let i=0; i<offset; i++) grid += '<div class="day-cell" style="opacity:0.2;"></div>';
+    let grid = '<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px;">';
+    ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].forEach(d => grid += `<div style="text-align:center; font-weight:bold; font-size:12px; color:gray; padding:5px;">${d}</div>`);
+    
+    for(let i=0; i<offset; i++) grid += '<div style="aspect-ratio:1/1.2; background:#f8fafc; border-radius:8px; opacity:0.3;"></div>';
+    
     for(let d=1; d<=lastDay; d++) {
         const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const count = tasks.filter(t => t.date === dStr).length;
-        grid += `<div class="day-cell" onclick="currentDate='${dStr}'; currentView='diaria'; render();">
-            <strong>${d}</strong>
-            ${count > 0 ? `<div style="background:#111827; color:white; border-radius:4px; font-size:10px; text-align:center; margin-top:5px;">${count} act.</div>` : ''}
-        </div>`;
+        const dayTasks = tasks.filter(t => t.date === dStr);
+        
+        grid += `
+            <div onclick="currentDate='${dStr}'; currentView='diaria'; render();" 
+                 style="aspect-ratio:1/1.2; background:white; border:1px solid #eee; border-radius:8px; padding:8px; cursor:pointer; overflow:hidden; display:flex; flex-direction:column; gap:4px;">
+                <strong style="font-size:12px;">${d}</strong>
+                ${dayTasks.slice(0, 2).map(t => `
+                    <div class="badge ${t.bookingStatus}" style="font-size:8px; padding:2px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        ${t.time} ${t.title}
+                    </div>
+                `).join('')}
+                ${dayTasks.length > 2 ? `<div style="font-size:9px; color:gray; text-align:center;">+${dayTasks.length - 2} más</div>` : ''}
+            </div>`;
     }
     grid += '</div>';
-    container.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 style="text-transform:capitalize;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2><div><button onclick="moveMonth(-1)">Anterior</button> <button onclick="moveMonth(1)">Siguiente</button></div></div>${grid}`;
+    
+    container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="text-transform:capitalize;">${currentMonth.toLocaleDateString('es-EC',{month:'long', year:'numeric'})}</h2>
+            <div><button onclick="moveMonth(-1)">Anterior</button> <button onclick="moveMonth(1)">Siguiente</button></div>
+        </div>
+        ${grid}`;
 }
 
-// --- VISTA LISTA (CON FRANJAS) ---
+// --- VISTA LISTA ---
 function renderList(container) {
-    const sortedTasks = [...tasks].sort((a, b) => {
-        if (a.date !== b.date) return a.date.localeCompare(b.date);
-        return a.time.localeCompare(b.time);
-    });
-
+    const sortedTasks = [...tasks].sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
     let html = '<h2>Cronograma de Acciones</h2>';
     let lastDate = null;
-
     sortedTasks.forEach(t => {
         if (t.date !== lastDate) {
             const dateObj = new Date(t.date + 'T00:00:00');
-            const dayLabel = dateObj.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' });
-            html += `
-                <div style="background: #e2e8f0; padding: 12px 20px; margin: 30px 0 15px 0; border-radius: 12px; display: flex; align-items: center; gap: 10px; border-left: 6px solid #1e293b;">
-                    <span style="text-transform: capitalize; font-weight: 800; color: #1e293b; font-size: 16px;">📅 ${dayLabel}</span>
-                </div>`;
+            html += `<div style="background: #e2e8f0; padding: 12px 20px; margin: 30px 0 15px 0; border-radius: 12px; display: flex; align-items: center; gap: 10px; border-left: 6px solid #1e293b;">
+                        <span style="text-transform: capitalize; font-weight: 800; color: #1e293b; font-size: 16px;">📅 ${dateObj.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                     </div>`;
             lastDate = t.date;
         }
         html += taskCard(t);
@@ -135,10 +140,6 @@ window.moveDay = (n) => { let d = new Date(currentDate+'T00:00:00'); d.setDate(d
 window.moveWeek = (n) => { let d = new Date(currentWeekStart+'T00:00:00'); d.setDate(d.getDate()+n); currentWeekStart=d.toISOString().slice(0,10); render(); };
 window.moveMonth = (n) => { currentMonth.setMonth(currentMonth.getMonth()+n); render(); };
 
-// --- EVENTOS INICIALES ---
-document.getElementById('roleLoginBtn').onclick = () => alert('Acceso restringido: El sistema de login se activará con la base de datos.');
-
-// Conectamos los botones de las pestañas
 document.querySelectorAll('.view-switch button').forEach(btn => {
     btn.onclick = (e) => {
         document.querySelectorAll('.view-switch button').forEach(b => b.classList.remove('active'));
@@ -148,5 +149,4 @@ document.querySelectorAll('.view-switch button').forEach(btn => {
     };
 });
 
-// Arrancamos la web
 render();
