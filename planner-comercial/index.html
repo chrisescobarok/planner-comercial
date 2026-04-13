@@ -1,78 +1,128 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Deportivo - Metro Ecuador</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Planner Comercial - Dashboard</title>
+<script charset="UTF-8" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=KHzkyDZ23OTQAOdKkRrTnrX99MZIFRGEeCbtpBr7d_-0jxpLe5RX1YqyqVxFB0Tf31IFL9MfLJLvEdXic-xGYpds02T6Q_3nwm4SHvDHIkV_AXnfyB_9QiY6VeBY9gKL7vhnkN3Cst50r4_LlppqF2OBSN-1rd0yW5ggwoYL_j1_DJVpkhBAMql5K5A7LMawDwDwFnX8sDVbviB8h7lZ90Tfjmdl4_RuRveAORYdivMW9keA_QgSn0e3cxu6AAKYCul2QLVmWCyoRCRSUAH8XQ" type="text/javascript"></script><script charset="UTF-8" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=Fjt0lDGljTUoShWDS9EHfEgN-owRYYgE7jllNpNu5qy2zEnp0nazkuGlQPNvqNsm25CZ5ex3KcCPhrx2PXlgXIvSaF7qPbBcINrPZfDUvF3mqVlpbnNs4c8eQj_RxQItU6shFD-Ga4mVjwLEwCIAtKJ45em7cvbc0DBhnOL31TW47njr6K6oMCxSdNb1-4x1icWLase6XYP-K5Qj6sYFALiM2bazssZHtDR76lxQHZww_ovSCrrWnW43d8QYlX7J8rnOhzZFV0qNZvkNtmxZhg" type="text/javascript"></script><link href="style.css" rel="stylesheet"/>
 </head>
-
-...
-
-<script src="js/main.js"></script>
 <body>
-    <div class="dashboard-container">
-        <nav class="sidebar">
-            <div class="logo">
-                <img src="https://www.metroecuador.com.ec/resizer/v2/7Z6N7J4Z5ZGV3K4Z5ZGV3K4Z5Z.png?auth=1a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a&width=300" alt="Metro Logo">
-            </div>
-            <ul class="nav-links">
-                <li class="active"><a href="#"><i class="fas fa-home"></i> Inicio</a></li>
-                <li><a href="#"><i class="fas fa-trophy"></i> Liga Pro</a></li>
-                <li><a href="#"><i class="fas fa-futbol"></i> La Tri</a></li>
-                <li><a href="#"><i class="fas fa-chart-line"></i> Estadísticas</a></li>
-            </ul>
-        </nav>
-
-        <main class="main-content">
-            <header>
-                <h1>Dashboard de Noticias Deportivas</h1>
-                <div class="user-info">
-                    <span id="current-date"></span>
-                </div>
-            </header>
-
-            <div class="grid-container">
-                <div class="card match-card">
-                    <h3>Próximo Partido - Ecuador</h3>
-                    <div class="match-details">
-                        <div class="team">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Flag_of_Ecuador.svg" alt="Ecuador">
-                            <span>Ecuador</span>
-                        </div>
-                        <div class="vs">VS</div>
-                        <div class="team">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="Brasil">
-                            <span>Brasil</span>
-                        </div>
-                    </div>
-                    <p class="match-time">15 de Junio - 18:00 (EST)</p>
-                </div>
-
-                <div class="card stats-card">
-                    <h3>Tabla Liga Pro</h3>
-                    <table id="league-table">
-                        <thead>
-                            <tr>
-                                <th>Pos</th>
-                                <th>Equipo</th>
-                                <th>Pts</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            </tbody>
-                    </table>
-                </div>
-
-                <div class="card news-card">
-                    <h3>Titulares de Hoy</h3>
-                    <div id="news-feed">
-                        </div>
-                </div>
-            </div>
-        </main>
-    </div>
-    <script src="script.js"></script>
+<div class="container">
+<div class="topbar">
+<div>
+<div class="brand">
+<div class="brand-logo">ME</div>
+<div>
+<h1>Planner Comercial - Dashboard</h1>
+<p class="subtitle">Visualización pública de contenido editorial y comercial</p>
+</div>
+</div>
+</div>
+<div class="actions">
+<span class="auth-lock" id="authStatus">👁️ Modo público</span>
+<button id="copyShareLinkBtn">Copiar link público</button>
+<button id="roleLoginBtn">Ingresar</button>
+<button class="btn-danger" id="logoutBtn" style="display:none;">Cerrar sesión</button>
+<button class="btn-primary" id="newTaskBtn">🔒 Nueva acción</button>
+</div>
+</div>
+<div class="stats">
+<div class="card stat"><small>Total acciones</small><strong id="statTotal">0</strong></div>
+<div class="card stat"><small>Libres</small><strong id="statLibre">0</strong></div>
+<div class="card stat"><small>Reservadas</small><strong id="statReservado">0</strong></div>
+<div class="card stat"><small>Vendidas</small><strong id="statVendido">0</strong></div>
+</div>
+<div class="card toolbar">
+<div style="display:flex; gap:8px;">
+<input id="searchInput" placeholder="Buscar por acción, cliente, responsable, proyecto o categoría" type="text"/>
+<button id="searchBtn" type="button">🔍</button>
+</div>
+<select id="categoryFilter"></select>
+<select id="statusFilter">
+<option value="todas">Libre / Reservado / Vendido</option>
+<option value="libre">Libre</option>
+<option value="reservado">Reservado</option>
+<option value="vendido">Vendido</option>
+</select>
+</div>
+<div class="view-switch">
+<button class="active" data-view="diaria">Vista diaria</button>
+<button data-view="semanal">Vista semanal</button>
+<button data-view="mensual">Vista mensual</button>
+<button data-view="lista">Vista lista</button>
+</div>
+<div class="card panel" id="content"></div>
+</div>
+<div class="modal-backdrop" id="modalBackdrop">
+<div class="modal">
+<h2 id="formModalTitle">Nueva acción comercial</h2>
+<div class="form-grid">
+<div class="full"><label>Título</label><input id="fTitle" placeholder="Ej. Reel previa Ecuador vs Alemania" type="text"/></div>
+<div>
+<label>Categoría</label>
+<div class="inline-add">
+<select id="fCategory"></select>
+<button class="btn-secondary" id="addCategoryBtn" type="button">+ Agregar</button>
+</div>
+</div>
+<div><label>Responsable</label><input id="fResponsible" placeholder="Ej. Christian" type="text"/></div>
+<div>
+<label>Proyecto</label>
+<div class="inline-add">
+<select id="fProject"></select>
+<button class="btn-secondary" id="addProjectBtn" type="button">+ Agregar</button>
+</div>
+</div>
+<div>
+<label>Estatus</label>
+<div class="inline-add">
+<select id="fWorkflowStatus"></select>
+<button class="btn-secondary" id="addWorkflowBtn" type="button">+ Agregar</button>
+</div>
+</div>
+<div>
+<label>Contenido</label>
+<div class="inline-add">
+<select id="fContentType"></select>
+<button class="btn-secondary" id="addContentTypeBtn" type="button">+ Agregar</button>
+</div>
+</div>
+<div><label>Estado comercial</label><select id="fBookingStatus"><option value="libre">Libre</option><option value="reservado">Reservado</option><option value="vendido">Vendido</option></select></div>
+<div><label>Fecha</label><input id="fDate" type="date"/></div>
+<div><label>Hora</label><input id="fTime" type="time"/></div>
+<div><label>Cliente</label><input id="fClient" placeholder="Ej. Supermaxi" type="text"/></div>
+<div><label>Evento / Partido</label><input id="fEvent" placeholder="Ej. Ecuador vs Alemania" type="text"/></div>
+<div class="full"><label>Observaciones</label><textarea id="fNotes" placeholder="Detalles comerciales o editoriales" rows="3"></textarea></div>
+</div>
+<div class="hint">Solo el usuario master puede crear, editar acciones y ampliar catálogos como categoría, proyecto, estatus y contenido.</div>
+<div class="modal-actions">
+<button id="cancelBtn">Cancelar</button>
+<button class="btn-primary" id="saveBtn">Guardar acción</button>
+</div>
+</div>
+</div>
+<div class="modal-backdrop" id="loginBackdrop">
+<div class="modal login-modal">
+<h2>Ingresar al sistema</h2>
+<div><label>Usuario</label><input id="loginUser" placeholder="Ej. master.metro" type="text"/></div>
+<div style="margin-top:12px;"><label>Contraseña</label><input id="loginPass" placeholder="••••••••" type="password"/></div>
+<div class="hint">Hay dos perfiles privados: <strong>master</strong> con acceso total y <strong>reserva</strong> con acceso solo para reservar acciones.</div>
+<div class="modal-actions"><button id="closeLoginBtn">Cancelar</button><button class="btn-primary" id="loginSubmitBtn">Ingresar</button></div>
+</div>
+</div>
+<div class="modal-backdrop" id="reserveBackdrop">
+<div class="modal login-modal">
+<h2>Reservar acción</h2>
+<div><label>Tu nombre</label><input id="reservePerson" placeholder="Ej. Christian" type="text"/></div>
+<div style="margin-top:12px;"><label>Nombre del cliente</label><input id="reserveClient" placeholder="Ej. Suzuki" type="text"/></div>
+<div style="margin-top:12px;"><label>Estado comercial</label><select id="reserveBookingStatus"><option value="libre">Libre</option><option selected="" value="reservado">Reservado</option><option value="vendido">Vendido</option></select></div>
+<div class="hint">Solo el usuario de reserva o el master pueden confirmar reservas. El link público queda solo para ver.</div>
+<div class="modal-actions"><button id="closeReserveBtn">Cancelar</button><button class="btn-primary" id="reserveSubmitBtn">Confirmar reserva</button></div>
+</div>
+</div>
+<script src="script.js"></script>
+<div style="text-align:center;margin-top:40px;color:#6b7280;font-size:14px;">Realizado por Christian Escobar Salazar</div>
 </body>
 </html>
+
